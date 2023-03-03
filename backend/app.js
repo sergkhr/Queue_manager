@@ -1,10 +1,12 @@
-const express = require("express");
-const BodyParser = require("body-parser");
-const bodyParser = require("body-parser");
+// const express = require("express");
+// const BodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
+import bodyParser from "body-parser";
+import Express from "express";
 
-class Application {
+export default class Application {
     constructor() {
-        this.expressApp = express();
+        this.expressApp = Express();
         this.setupHandlers();
     }
     setupHandlers() {
@@ -23,5 +25,3 @@ class Application {
         res.json({text: req.body});
     }
 }
-
-module.exports = Application;
