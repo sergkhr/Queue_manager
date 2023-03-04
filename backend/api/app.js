@@ -1,12 +1,11 @@
-// const express = require("express");
-// const BodyParser = require("body-parser");
-// const bodyParser = require("body-parser");
 import bodyParser from "body-parser";
 import Express from "express";
+import QueueManager from "./queue/QueueManager.js"
 
 export default class Application {
     constructor() {
         this.expressApp = Express();
+        this.manager = new QueueManager();
         this.setupHandlers();
     }
     setupHandlers() {
