@@ -8,6 +8,14 @@ export default class Application {
         this.manager = new QueueManager();
         this.setupHandlers();
     }
+    start(config) {
+        this.listener = this.expressApp.listen(config.port, config.host, function() {
+            console.log(`App listening at port ${config.port}`);
+        });
+    }
+    save() {
+        console.log("Saving...");
+    }
     setupHandlers() {
         let app = this.expressApp;
         let jsonParser = bodyParser.json();
@@ -22,5 +30,8 @@ export default class Application {
     postTest(req, res) {
         console.log(`POST: ${toString(req.body)}`);
         res.json({text: req.body});
+        this.listener.close(()=>{
+            console.log("Text");
+        });
     }
 }

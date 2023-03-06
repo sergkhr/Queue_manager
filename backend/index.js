@@ -1,7 +1,11 @@
 import Application from "./api/app.js";
-import config from "./api/config.json" assert {type: 'json' };;
+import config from "./api/config.json" assert {type: 'json' };
+import process from "node:process"
 
 let app = new Application();
-app.expressApp.listen(config.port, config.host, function() {
-    console.log(`App listening at port ${config.port}`);
+app.start(config);
+
+process.on('SIGINT', () => {
+    app.save();
+    app.listener.close();
 });
