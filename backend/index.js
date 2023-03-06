@@ -1,5 +1,5 @@
 import Application from "./api/app.js";
-import config from "./api/config.json" assert {type: 'json' };
+import config from "./config.json" assert {type: 'json' };
 import process from "node:process"
 
 let app = new Application();
