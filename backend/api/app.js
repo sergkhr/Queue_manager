@@ -29,6 +29,9 @@ export default class Application {
 
         app.get('/users', this.usersGetHandler.bind(this));
         app.post('/users', this.usersPostHandler.bind(this));
+
+        app.get('/queues', this.queueGetHandler.bind(this));
+        app.post('/queues', this.queuePostHandler.bind(this));
     }
 
     save() {
@@ -37,20 +40,6 @@ export default class Application {
         this.userManager.save();
         console.log("Saved");
     }
-    
-    // getTest(req, res) {
-    //     let searchString = req.query.searchString || '';
-    //     console.log(`GET: ${toString(req.query)}`);
-    //     res.json({text: searchString});
-    // }
-
-    // postTest(req, res) {
-    //     console.log(`POST: ${toString(req.body)}`);
-    //     res.json({text: req.body});
-    //     this.listener.close(()=>{
-    //         console.log("Text");
-    //     });
-    // }
 
     adminPanelHandler(req, res) {
         console.log("Admin command got: " + JSON.stringify(req.body));
@@ -59,29 +48,52 @@ export default class Application {
             this.save();
             this.listener.close();
         } else {
-            res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+            // res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
             res.json({text: "Error"});
         }
     }
 
+    usersGetHandler(req, res) {
+        console.log("Users get");
+        console.log(JSON.stringify(this.userManager.getUsersList()));
+        res.json(this.userManager.getUsersList());
+    }
     usersPostHandler(req, res) {
+        console.log("Users post");
         if (req.body.command = "create") {
             let user = {
-                name: req.body.config.name,
-                password: req.body.config.password
+                name: req.body.arguments.name,
+                password: req.body.arguments.password
             }
             if (this.userManager.createUser(user)){
-                res.json({result: "Success"})
+                res.json({result: "Success"});
             } else {
-                res.json({result: "Error"})
+                res.json({result: "Error"});
             }
         }
         res.json({result: "No command entered"});
-        console.log("Users post")
     }
-    usersGetHandler(req, res) {
-        console.log("Users get")
-        console.log(JSON.stringify(this.userManager.getUsersList()));
-        res.json(this.userManager.getUsersList());
+
+    queueGetHandler(req, res) {
+        console.log("Queues get");
+        console.log(JSON.stringify(this.queueManager.getQueueList()));
+        res.json(this.queueManager.getQueueList());
+    }
+    queuePostHandler(req, res) {
+        console.log("Queues post");
+        console.log(JSON.stringify(req.body));
+        if (req.body.command = "create") {
+            let queue = {
+                name: req.body.arguments.name,
+                config: req.body.arguments.config
+            }
+            if (this.queueManager.createQueue(queue)){
+                res.json({result: "Success"});
+            } else {
+                res.json({result: "Error"});
+            }
+        } else {
+            res.json({result: "No command entered"});
+        }
     }
 }
