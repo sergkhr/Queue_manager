@@ -8,6 +8,7 @@ export default class Queue {
     */
     constructor(queue) {
         this.name = queue.name;
+        this.description = queue.description || "Default description"
         this.config = {
             owner: queue.config?.owner || 0,
             accessType: queue.config?.accessType || "public",

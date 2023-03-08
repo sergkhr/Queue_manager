@@ -10,7 +10,7 @@ export default class QueueManager {
     load() {
         let rawQueues = JSON.parse(fs.readFileSync("data/queues.json", "utf8"));
         for (let i in rawQueues) {
-            this.queues.push(new User(this, rawUsers[i]));
+            this.queues.push(new Queue(rawQueues[i]));
         }
     }
     save() {
