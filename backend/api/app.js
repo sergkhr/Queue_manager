@@ -54,7 +54,7 @@ export default class Application {
 
     adminPanelHandler(req, res) {
         console.log("Admin command got: " + JSON.stringify(req.body));
-        if (req.command == "turnoff") {
+        if (req.body.command == "turnoff") {
             res.json({text: "Turning off"});
             this.save();
             this.listener.close();
@@ -65,7 +65,18 @@ export default class Application {
     }
 
     usersPostHandler(req, res) {
-        res.json(this.userManager.getUsersList());
+        if (req.body.command = "create") {
+            let user = {
+                name: req.body.config.name,
+                password: req.body.config.password
+            }
+            if (this.userManager.createUser(user)){
+                res.json({result: "Success"})
+            } else {
+                res.json({result: "Error"})
+            }
+        }
+        res.json({result: "No command entered"});
         console.log("Users post")
     }
     usersGetHandler(req, res) {
