@@ -1,0 +1,21 @@
+{
+    "/admin": {
+        "post": [
+            {
+                "command": "turnoff"
+            }
+        ]
+    },
+    "/users": {
+        "post": [
+            {
+                "command": "create",
+                "config": {
+                    "name": "Имя пользователя",
+                    "password": "Пароль"
+                }
+            }
+        ],
+        "get": "Возвращает список пользователей"
+    }
+}
