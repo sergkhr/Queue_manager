@@ -1,8 +1,10 @@
 import bodyParser from "body-parser";
 import Express from "express";
 import cors from "cors";
+
 import QueueManager from "./queue/QueueManager.js";
 import UserManager from "./user/UserManager.js";
+import Result from "./Result.js";
 
 export default class Application {
     constructor() {
@@ -49,7 +51,7 @@ export default class Application {
             this.listener.close();
         } else {
             // res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-            res.json({text: "Error"});
+            res.json(new Result(false));
         }
     }
 
@@ -65,13 +67,10 @@ export default class Application {
                 name: req.body.arguments.name,
                 password: req.body.arguments.password
             }
-            if (this.userManager.createUser(user)){
-                res.json({result: "Success"});
-            } else {
-                res.json({result: "Error"});
-            }
+            res.json(this.userManager.createUser(user))
+            return;
         }
-        res.json({result: "No command entered"});
+        res.json(new Result(false, "No command Entered"));
     }
 
     queueGetHandler(req, res) {
@@ -88,12 +87,12 @@ export default class Application {
                 config: req.body.arguments.config
             }
             if (this.queueManager.createQueue(queue)){
-                res.json({result: "Success"});
+                res.json(new Result(true));
             } else {
-                res.json({result: "Error"});
+                res.json(new Result(false));
             }
         } else {
-            res.json({result: "No command entered"});
+            res.json(new Result(false, "No command entered"));
         }
     }
 }

@@ -1,6 +1,8 @@
 import User from "./User.js"
 import fs from "fs"
 
+import Result from "../Result.js";
+
 export default class UserManager {
     constructor() {
         this.users = [];
@@ -31,8 +33,8 @@ export default class UserManager {
     createUser(user) {
         if (!this.userIsExist(user.name)) {
             this.users.push(new User(user));
-            return true;
+            return new Result(true);
         }
-        return false;
+        return new Result(false, "User with name '" + user.name + "' alredy exist");
     }
 }
