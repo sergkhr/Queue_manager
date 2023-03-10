@@ -69,6 +69,19 @@ class Queue:
     def get_name(self):
         return self.name
 
+    def swap(self, man):
+        if len(self.queued_humans) < 1:
+            return "1"
+        for num, i in enumerate(self.queued_humans):
+            if i == man:
+                if num + 1 > len(self.queued_humans) - 1:
+                    return "max"
+                buf = self.queued_humans[num]
+                self.queued_humans[num] = self.queued_humans[num+1]
+                self.queued_humans[num+1] = buf
+                return self.queued_humans[num]
+        return "none"
+
 
 def send_message(id, msg, stiker=None, attach=None):
     try:
@@ -80,7 +93,7 @@ def send_message(id, msg, stiker=None, attach=None):
         return
 
 buf = {}
-commands = "#имя #описание #фиксирую #поп #выхожу #очередь #фиксация #анфикс"
+commands = "#имя #описание #фиксирую #поп #выхожу #очередь #фиксация #анфикс #пропустить"
 if __name__ == "__main__":
     vk_session = vk_api.VkApi(token=token_api)
     longpoll = VkBotLongPoll(vk_session, 219286730)
@@ -238,6 +251,23 @@ if __name__ == "__main__":
                                         " Сменить очередь?", keyboard=keyboard.get_keyboard())
                 if not flag:
                     send_message(id, "Очередь не найдена.")
+            elif msg == "#пропустить":
+                try:
+                    user_get = vk.users.get(user_ids=event.obj['message']['from_id'])
+                    first_name = user_get[0]['first_name']
+                    last_name = user_get[0]['last_name']
+                    res = qu.swap(first_name + " " + last_name)
+                    if res == "1":
+                        send_message(id, "Недостаточно человек в очереди")
+                    elif res == "max":
+                        send_message(id, "Последний в очереди, некого пропускать")
+                    elif res == "none":
+                        send_message(id, f"{first_name} {last_name} не в очереди")
+                    else:
+                        send_message(id, f"{first_name} {last_name} пропустил человека вперёд")
+                except BaseException as ex:
+                    print(ex)
+                    send_message(id, "Ошибка пропуска человека")
             elif msg == "#помощь":
                 send_message(id, "#запуск – создать очередь\n"
                                  "#выход – закрыть очередь\n"
@@ -251,6 +281,7 @@ if __name__ == "__main__":
                                  "#анфикс – удалить очередь с сервера\n"
                                  "#очереди – вывести все сохранённые очереди\n"
                                  "#перейти [название] – перейти в очередь по названию. Обратите внимание, "
-                                 "что текущая очередь автоматически сохранена не будет!"
+                                 "что текущая очередь автоматически сохранена не будет!\n"
+                                 "#пропустить – пропустить человека вперёд себя "
 
                              )
