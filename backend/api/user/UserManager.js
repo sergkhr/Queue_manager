@@ -22,19 +22,23 @@ export default class UserManager {
     getUsersList() {
         return this.users;
     }
-    userIsExist(name) {
+    getUser(login) {
+        return this.users[id];
+    }
+    checkPassword
+    userIsExist(login) {
         for (let i in this.users) {
-            if (this.users[i].name == name) {
+            if (this.users[i].login == login) {
                 return true;
             }
         }
         return false;
     }
     createUser(user) {
-        if (!this.userIsExist(user.name)) {
-            this.users.push(new User(user));
-            return new Result(true);
+        if (this.userIsExist(user.login)) {
+            return new Result(false, "User with name '" + user.name + "' alredy exist");
         }
-        return new Result(false, "User with name '" + user.name + "' alredy exist");
+        this.users.push(new User(user));
+        return new Result(true);
     }
 }

@@ -34,6 +34,8 @@ export default class Application {
 
         app.get('/queues', this.queueGetHandler.bind(this));
         app.post('/queues', this.queuePostHandler.bind(this));
+
+        // app.get('/users/:login', this.)
     }
 
     save() {
@@ -64,8 +66,9 @@ export default class Application {
         console.log("Users post");
         if (req.body.command = "create") {
             let user = {
-                name: req.body.arguments.name,
-                password: req.body.arguments.password
+                login: req.body.arguments.login,
+                password: req.body.arguments.password,
+                name: req.body.arguments.name
             }
             res.json(this.userManager.createUser(user))
             return;
