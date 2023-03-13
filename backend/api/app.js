@@ -52,7 +52,6 @@ export default class Application {
             this.save();
             this.listener.close();
         } else {
-            // res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
             res.json(new Result(false));
         }
     }
@@ -65,12 +64,12 @@ export default class Application {
     usersPostHandler(req, res) {
         console.log("Users post");
         if (req.body.command = "create") {
-            let user = {
-                login: req.body.arguments.login,
-                password: req.body.arguments.password,
-                name: req.body.arguments.name
-            }
-            res.json(this.userManager.createUser(user))
+            // let user = {
+            //     login: req.body.arguments.login,
+            //     password: req.body.arguments.password,
+            //     name: req.body.arguments.name
+            // }
+            res.json(this.userManager.createUser(req.body.arguments))
             return;
         }
         res.json(new Result(false, "No command Entered"));
@@ -85,11 +84,11 @@ export default class Application {
         console.log("Queues post");
         console.log(JSON.stringify(req.body));
         if (req.body.command = "create") {
-            let queue = {
-                name: req.body.arguments.name,
-                config: req.body.arguments.config
-            }
-            if (this.queueManager.createQueue(queue)){
+            // let queue = {
+            //     name: req.body.arguments.name,
+            //     config: req.body.arguments.config
+            // }
+            if (this.queueManager.createQueue(req.body.arguments)){
                 res.json(new Result(true));
             } else {
                 res.json(new Result(false));
