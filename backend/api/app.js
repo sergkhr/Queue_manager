@@ -35,7 +35,7 @@ export default class Application {
         app.get('/queues', this.queueGetHandler.bind(this));
         app.post('/queues', this.queuePostHandler.bind(this));
 
-        // app.get('/users/:login', this.)
+        app.post('/users/:login', this.userLoginHandler.bind(this));
     }
 
     save() {
@@ -96,5 +96,11 @@ export default class Application {
         } else {
             res.json(new Result(false, "No command entered"));
         }
+    }
+
+    userLoginHandler(req, res) {
+        console.log("User login");
+        console.log(JSON.stringify(req.body));
+        
     }
 }

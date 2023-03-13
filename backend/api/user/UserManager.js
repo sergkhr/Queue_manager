@@ -26,6 +26,16 @@ export default class UserManager {
         return this.users[id];
     }
     checkPassword(login, password) {
+        for (let i in this.users) {
+            if (this.users[i].login == login) {
+                if (this.users[i].checkPassword(password)) {
+                    return new Result(true);
+                } else {
+                    return new Result(false, "Wrong password");
+                }
+            }
+        }
+        return new Result(false, "User with login '" + login + "' not found");
     }
 
     userIsExist(login) {
