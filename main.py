@@ -99,7 +99,7 @@ if __name__ == "__main__":
     vk_session = vk_api.VkApi(token=token_api)
     longpoll = VkBotLongPoll(vk_session, 219286730)
     vk = vk_session.get_api()
-    print("Бот запущен")
+    # print("Бот запущен")
     conversations = vk.messages.getConversations()
     state = {}
     if not os.path.isfile('queue.pkl'):
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     else:
         with open('queue.pkl', 'rb') as f:
             queue = pickle.load(f)
-            print("Очереди загружены")
+            # print("Очереди загружены")
     count = 0
     have_queue = False
     for event in longpoll.listen():
@@ -124,8 +124,8 @@ if __name__ == "__main__":
             qu = buf[id][0]
             have_queue = buf[id][1]
             msg = event.obj['message']['text']
-            if "#" in msg:
-                print("Получено сообщение с командой")
+           # if "#" in msg:
+             #   print("Получено сообщение с командой")
             if len(state[id]) != 0:
                 if state[id][0] == "подтверждение":
                     if msg == "[club219286730|@queue_fixation] Да":
