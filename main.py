@@ -392,7 +392,9 @@ if __name__ == "__main__":
                     send_message(id, "Ошибка конвертации в число, возможно присутствуют символы")
                     flag = True
                 if not flag:
-                    if len(queue[id]) < num:
+                    if num == 0:
+                        num = 1
+                    if len(queue[id]) < num or num < 1:
                         send_message(id, "Очереди по этому порядковому номеру не существует.")
                     elif not have_queue:
                         buf[id][0] = queue[id][num-1]
