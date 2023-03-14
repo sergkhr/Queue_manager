@@ -122,6 +122,20 @@ def send_message(id, msg, stiker=None, attach=None):
         print(ex)
         return
 
+
+def fixation(queue):
+    for num, i in enumerate(queue[id]):
+        if qu.get_name() == i.get_name():
+            queue[id][num] = qu
+            return False
+    queue[id].append(copy.deepcopy(qu))
+    if not os.path.exists(f"{os.path.dirname(os.getcwd())}\\queue_file"):
+        os.mkdir(f"{os.path.dirname(os.getcwd())}\\queue_file")
+    with open(f"{os.path.dirname(os.getcwd())}\\queue_file\\queue.pkl", 'wb') as f:
+        pickle.dump(queue, f)
+    return True
+
+
 buf = {}
 commands = "#имя #описание #фиксирую #поп #выхожу #очередь #фиксация #анфикс #пропустить #заморозка #разморозка"
 commands = commands.split()
@@ -154,20 +168,6 @@ if __name__ == "__main__":
                     send_message(id, "Ошибка пользователя.")
                     return ""
 
-            def fixation():
-                flag = False
-                for num, i in enumerate(queue[id]):
-                    if qu.get_name() == i.get_name():
-                        flag = True
-                        queue[id][num] = qu
-                        return "+-"
-                if not flag:
-                    queue[id].append(copy.deepcopy(qu))
-                    return "+"
-                if not os.path.exists(f"{os.path.dirname(os.getcwd())}\\queue_file"):
-                    os.mkdir(f"{os.path.dirname(os.getcwd())}\\queue_file")
-                with open(f"{os.path.dirname(os.getcwd())}\\queue_file\\queue.pkl", 'wb') as f:
-                    pickle.dump(queue, f)
 
             id = event.obj['message']['peer_id']
             if id not in state:
@@ -228,7 +228,7 @@ if __name__ == "__main__":
                     if qu.add(full_name()):
                         send_message(id, f"{full_name()} внесен(а) в очередь")
                         if have_name:
-                            fixation()
+                            fixation(queue)
                     else:
                         send_message(id, f"{full_name()} уже в очереди.")
                 except BaseException as ex:
@@ -251,7 +251,7 @@ if __name__ == "__main__":
                     send_message(id, "Очередь пуста")
                 else:
                     if have_name:
-                        fixation()
+                        fixation(queue)
                     send_message(id, f"{deleted} был удалён из очереди")
             elif msg == "#выхожу":
                 try:
@@ -260,7 +260,7 @@ if __name__ == "__main__":
                     last_name = user_get[0]['last_name']
                     if qu.quit(first_name + " " + last_name):
                         if have_name:
-                            fixation()
+                            fixation(queue)
                         send_message(id, f"{first_name} {last_name} вышел(вышла) из очереди")
                     else:
                         send_message(id, f"{first_name} {last_name} не в очереди")
@@ -279,7 +279,7 @@ if __name__ == "__main__":
                 if qu.get_name() == "":
                     send_message(id, "Нельзя сохранить очередь без названия")
                 else:
-                    if fixation() == "+":
+                    if not fixation(queue):
                         send_message(id, "Очередь сохранена.")
                     else:
                         send_message(id, "Очередь перезаписана")
