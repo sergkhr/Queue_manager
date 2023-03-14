@@ -75,11 +75,14 @@ class Queue:
                 return True
         return False
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.name
 
-    def get_first(self):
-        return self.queued_humans[0]
+    def get_first(self) -> str:
+        if len(self.queued_humans) != 0:
+            return self.queued_humans[0]
+        else:
+            return ""
 
     def swap(self, man) -> str:
         if len(self.queued_humans) < 1:
@@ -221,10 +224,14 @@ if __name__ == "__main__":
                         i = first_name.find("i")
                         if first_name[i + 1] in bukvi or first_name[i - 1] in bukvi:
                             first_name = first_name.replace("i", "", 1)
+                        else:
+                            break
                     while last_name.find("i") != -1:
                         i = last_name.find("i")
                         if last_name[i + 1] in bukvi or last_name[i - 1] in bukvi:
                             last_name = last_name.replace("i", "", 1)
+                        else:
+                            break
                     return first_name + " " + last_name
                 except BaseException as ex:
                     print(ex)
@@ -304,7 +311,7 @@ if __name__ == "__main__":
                 except BaseException as ex:
                     print(ex)
                     send_message(id, "Ошибка добавления в очередь")
-            elif ("#имя" in msg or "#название") and have_queue:
+            elif ("#имя" in msg or "#название" in msg) and have_queue:
                 name = event.obj['message']['text']
                 name = name.replace("#имя", "").strip()
                 name = name.replace("#Имя", "").strip()
@@ -324,12 +331,14 @@ if __name__ == "__main__":
                 if deleted == "-":
                     send_message(id, "Очередь пуста")
                 else:
-                    if have_name:
+                    if have_name:#
                         fixation(queue)
                     res = ""
                     if not no_message:
                         res += f"{deleted} был удалён из очереди\n"
-                    res += f"Следующий(-ая): {qu.get_first()}"
+                    next = qu.get_first()
+                    if next != "":
+                        res += f"Следующий(-ая): {next}"
                     send_message(id, res)
             elif msg == "#выхожу":
                 try:
