@@ -60,7 +60,8 @@ class Queue:
     def pop(self) -> str:
         for i in range(len(self.queued_humans)):
             if not self.humans_freeze[i]:
-                return self.queued_humans.pop(0)
+                self.humans_freeze.pop(i)
+                return self.queued_humans.pop(i)
         return "-"
 
     def quit(self, man) -> bool:
