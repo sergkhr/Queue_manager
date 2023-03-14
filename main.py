@@ -160,10 +160,10 @@ if __name__ == "__main__":
                     if qu.get_name() == i.get_name():
                         flag = True
                         queue[id][num] = qu
-                        send_message(id, "Очередь перезаписана")
+                        return "+-"
                 if not flag:
                     queue[id].append(copy.deepcopy(qu))
-                    send_message(id, "Очередь сохранена.")
+                    return "+"
                 if not os.path.exists(f"{os.path.dirname(os.getcwd())}\\queue_file"):
                     os.mkdir(f"{os.path.dirname(os.getcwd())}\\queue_file")
                 with open(f"{os.path.dirname(os.getcwd())}\\queue_file\\queue.pkl", 'wb') as f:
@@ -279,7 +279,10 @@ if __name__ == "__main__":
                 if qu.get_name() == "":
                     send_message(id, "Нельзя сохранить очередь без названия")
                 else:
-                    fixation()
+                    if fixation() == "+":
+                        send_message(id, "Очередь сохранена.")
+                    else:
+                        send_message(id, "Очередь перезаписана")
             elif msg == "#анфикс":
                 flag = False
                 for num, i in enumerate(queue[id]):
@@ -401,5 +404,5 @@ if __name__ == "__main__":
                                  "вы не пропадаете из очереди.\nПриведу пример. Вы находитесь на 2 позиции, но поняли,"
                                  "что хотите сдать пятым. Вы замораживаетесь, и при пропуске сначала уйдёт 1, потом 3,"
                                  "а вы останетесь замороженным. \n"
-				 "#разморозка – убрать эффект заморозки."
+                                 "#разморозка – убрать эффект заморозки"
                              )
