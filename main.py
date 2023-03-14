@@ -279,7 +279,7 @@ if __name__ == "__main__":
                 if qu.get_name() == "":
                     send_message(id, "Нельзя сохранить очередь без названия")
                 else:
-                    if not fixation(queue):
+                    if fixation(queue):
                         send_message(id, "Очередь сохранена.")
                     else:
                         send_message(id, "Очередь перезаписана")
