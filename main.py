@@ -7,6 +7,7 @@ from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.utils import get_random_id
 import copy
 import pickle
+from threading import Thread
 
 
 class Queue:
@@ -137,10 +138,20 @@ def fixation(queue):
     return True
 
 
-buf = {}
-commands = "#имя #описание #фиксирую #поп #выхожу #очередь #фиксация #анфикс #пропустить #заморозка #разморозка"
-commands = commands.split()
+def exit_any():
+    while True:
+        print("Enter exit to finish process")
+        intent = input()
+        if intent.lower() == "exit":
+            exit(0)
+
+
+
 if __name__ == "__main__":
+    buf = {}
+    commands = "#имя #описание #фиксирую #поп #выхожу #очередь #фиксация #анфикс #пропустить #заморозка #разморозка"
+    commands = commands.split()
+    Thread(target=exit_any, args=()).start()
     vk_session = vk_api.VkApi(token=token_api)
     longpoll = VkBotLongPoll(vk_session, 219286730)
     vk = vk_session.get_api()
