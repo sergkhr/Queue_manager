@@ -152,7 +152,7 @@ def send_photo(peer_id, img_req, message=None):
 def fixation(queue):
     for num, i in enumerate(queue[id]):
         if qu.get_name() == i.get_name():
-            queue[id][num] = qu
+            queue[id][num] = copy.deepcopy(qu)
             return False
     queue[id].append(copy.deepcopy(qu))
     if not os.path.exists(f"{os.path.dirname(os.getcwd())}\\queue_file"):
@@ -179,6 +179,7 @@ def unfix(queue, name):
             state[id].append(num)
     if not flag:
         send_message(id, "Очередь не на сервере.")
+
 
 
 should_quit = False
@@ -266,6 +267,15 @@ if __name__ == "__main__":
                     elif msg == "[club219286730|@queue_fixation] нет":
                         state[id].clear()
                         send_message(id, "Смена очереди отменена.")
+                elif state[id][0] == "завершить":
+                    if msg == "[club219286730|@queue_fixation] да":
+                        buf[id][1] = False
+                        buf[id][0].clear()
+                        state[id].clear()
+                        send_message(id, "Очередь выключена.")
+                    elif msg == "[club219286730|@queue_fixation] нет":
+                        state[id].clear()
+                        send_message(id, "Завершение очереди отменено.")
                 elif state[id][0] == "удаление":
                     if msg == "[club219286730|@queue_fixation] да":
                         queue[id].pop(state[id][1])
@@ -288,14 +298,35 @@ if __name__ == "__main__":
                     message="Очередь запущена. Чтобы добавить себя в очередь, "
                             "напишите #фиксирую. Чтобы убрать очередь, напишите #выход. "
                             "Чтобы получить все команды очереди, введите #помощь", keyboard=keyboard.get_keyboard())
+            elif "#запуск" in msg and not have_queue:
+                name = event.obj['message']['text']
+                name = name.replace("#запуск", "").strip()
+                name = name.replace("#Запуск", "").strip()
+                flag = False
+                for i in queue[id]:
+                    if i.get_name() == name:
+                        flag = True
+                        buf[id][0] = copy.deepcopy(i)
+                        buf[id][1] = True
+                        send_message(id, f"Очередь {name} была запущена.")
+                if not flag:
+                    send_message(id, "Очередь не найдена.")
+            elif "#запуск" in msg and have_queue:
+                send_message(id, "Очередь уже запущена.")
             elif msg == "#запуск" and have_queue:
                 send_message(id, "Очередь уже запущена")
             elif msg in commands and not have_queue:
                 send_message(id, "Очередь не запущена. Чтобы запустить очередь, напишите #запуск")
             elif msg == "#выход" and have_queue:
-                buf[id][1] = False
-                qu.clear()
-                send_message(id, "Очередь выключена.")
+                keyboard = VkKeyboard(inline=True)
+                keyboard.add_button("Да", color=VkKeyboardColor.POSITIVE)
+                keyboard.add_button("Нет", color=VkKeyboardColor.NEGATIVE)
+                vk.messages.send(
+                    peer_id=id,
+                    random_id=get_random_id(),
+                    message="Вы уверены, что хотите"
+                            " завершить очередь?", keyboard=keyboard.get_keyboard())
+                state[id].append("завершить")
             elif msg == "#выход" and not have_queue:
                 send_message(id, "В данный момент очереди нет. "
                                  "Чтобы запустить, используйте команду #запуск")
@@ -401,12 +432,12 @@ if __name__ == "__main__":
                     if i.get_name() == name:
                         flag = True
                         if not have_queue:
-                            buf[id][0] = i
+                            buf[id][0] = copy.deepcopy(i)
                             buf[id][1] = True
                             send_message(id, "Очередь была сменена")
                         else:
                             state[id].append("подтверждение")
-                            state[id].append(i)
+                            state[id].append(copy.deepcopy(i))
                             keyboard = VkKeyboard(inline=True)
                             keyboard.add_button("Да", color=VkKeyboardColor.POSITIVE)
                             keyboard.add_button("Нет", color=VkKeyboardColor.NEGATIVE)
@@ -480,12 +511,12 @@ if __name__ == "__main__":
                     if len(queue[id]) < num or num < 1:
                         send_message(id, "Очереди по этому порядковому номеру не существует.")
                     elif not have_queue:
-                        buf[id][0] = queue[id][num - 1]
+                        buf[id][0] = copy.deepcopy(queue[id][num - 1])
                         buf[id][1] = True
                         send_message(id, "Очередь была сменена")
                     else:
                         state[id].append("подтверждение")
-                        state[id].append(queue[id][num - 1])
+                        state[id].append(copy.deepcopy(queue[id][num - 1]))
                         keyboard = VkKeyboard(inline=True)
                         keyboard.add_button("Да", color=VkKeyboardColor.POSITIVE)
                         keyboard.add_button("Нет", color=VkKeyboardColor.NEGATIVE)
