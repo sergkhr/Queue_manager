@@ -12,12 +12,12 @@ export default class UserManager {
         let rawUsers = JSON.parse(fs.readFileSync("data/users.json", "utf8"));
         for (let i in rawUsers) {
             this.users.push(new User(rawUsers[i]));
-            // console.log(rawUsers[i]);
         }
-        // fs.writeFileSync("users.json", JSON.stringify({name: "text"}));
+        console.log("Users loaded: " + this.users.length);
     }
     save() {
         fs.writeFileSync("data/users.json", JSON.stringify(this.users, null, 4));
+        console.log("Users saved: " + this.users.length);
     }
     getUsersList() {
         return this.users;

@@ -12,9 +12,11 @@ export default class QueueManager {
         for (let i in rawQueues) {
             this.queues.push(new Queue(rawQueues[i]));
         }
+        console.log("Queues loaded: " + this.queues.length);
     }
     save() {
         fs.writeFileSync("data/queues.json", JSON.stringify(this.queues, null, 4));
+        console.log("Queues saved: " + this.queues.length);
     }
     createQueue (queue) {
         if (!queue.name) {
