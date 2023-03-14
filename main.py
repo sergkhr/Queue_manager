@@ -304,8 +304,8 @@ if __name__ == "__main__":
                     send_message(id, "Очередь не на сервере.")
             elif msg == "#очереди":
                 result = ""
-                for i in queue[id]:
-                    result += i.get_name() + "\n"
+                for num, i in enumerate(queue[id]):
+                    result += f"{num+1}) {i.get_name()}\n"
                 if result == "":
                     send_message(id, "Очередей нет.")
                 else:
@@ -383,6 +383,33 @@ if __name__ == "__main__":
                             send_message(id, result)
                 if not flag:
                     send_message(id, "Такой очереди не существует.")
+            elif "#гото" in msg:
+                msg = msg.replace("#гото", "").strip()
+                flag = False
+                try:
+                    num = int(msg)
+                except ValueError:
+                    send_message(id, "Ошибка конвертации в число, возможно присутствуют символы")
+                    flag = True
+                if not flag:
+                    if len(queue[id]) < num:
+                        send_message(id, "Очереди по этому порядковому номеру не существует.")
+                    elif not have_queue:
+                        buf[id][0] = queue[id][num-1]
+                        buf[id][1] = True
+                        send_message(id, "Очередь была сменена")
+                    else:
+                        state[id].append("подтверждение")
+                        state[id].append(queue[id][num-1])
+                        keyboard = VkKeyboard(inline=True)
+                        keyboard.add_button("Да", color=VkKeyboardColor.POSITIVE)
+                        keyboard.add_button("Нет", color=VkKeyboardColor.NEGATIVE)
+                        vk.messages.send(
+                            peer_id=id,
+                            random_id=get_random_id(),
+                            message="Смена очереди приведёт к потере текущей"
+                                    " очереди. Чтобы сохранить очередь, можете использовать команду #фиксация."
+                                    " Сменить очередь?", keyboard=keyboard.get_keyboard())
             elif msg == "#помощь":
                 send_message(id, "#запуск – создать очередь\n"
                                  "#выход – закрыть очередь\n"
@@ -397,6 +424,7 @@ if __name__ == "__main__":
                                  "#очереди – вывести все сохранённые очереди\n"
                                  "#перейти [название] – перейти в очередь по названию. Обратите внимание, "
                                  "что текущая очередь автоматически сохранена не будет!\n"
+                                 "#гото [номер] – перейти в очередь по номеру.\n"
                                  "#пропустить – пропустить человека вперёд себя \n"
                                  "#покажи [название] – вывести всю информацию об очереди не переходя в неё\n"
                                  "#заморозка – 'заморозиться' – в "
