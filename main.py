@@ -1,4 +1,6 @@
 import os
+import sys
+
 import vk_api
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from vk_api.longpoll import VkLongPoll, VkEventType
@@ -137,14 +139,13 @@ def fixation(queue):
         pickle.dump(queue, f)
     return True
 
-
+should_quit = False
 def exit_any():
     while True:
         print("Enter exit to finish process")
         intent = input()
         if intent.lower() == "exit":
-            exit(0)
-
+            os._exit(0)
 
 
 if __name__ == "__main__":
