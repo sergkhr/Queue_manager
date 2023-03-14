@@ -24,9 +24,9 @@ class Queue:
             return "-"
         result = ""
         for i, who in enumerate(self.queued_humans):
-            result += f"{i + 1})"
+            result += f"{i + 1}) "
             if self.humans_freeze[i]:
-                result += " ❄"
+                result += "❄"
             result += who + "\n"
         return result
 
