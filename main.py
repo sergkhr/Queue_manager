@@ -153,7 +153,7 @@ def send_photo(peer_id, img_req, message=None):
         return
 
 
-def fixation(queue):
+def fixation(queue,qu):
     for num, i in enumerate(queue[id]):
         if qu.get_name() == i.get_name():
             queue[id][num] = copy.deepcopy(qu)
@@ -358,7 +358,7 @@ if __name__ == "__main__":
                             if not no_message:
                                 send_message(id, f"{full_name()} внесен(а) в очередь")
                             if have_name:
-                                fixation(queue)
+                                fixation(queue, qu)
                         else:
                             send_message(id, f"{full_name()} уже в очереди.")
                     except BaseException as ex:
@@ -374,7 +374,7 @@ if __name__ == "__main__":
                     if not no_message:
                         send_message(id, f"{name} внесен(а) в очередь")
                     if have_name:
-                        fixation(queue)
+                        fixation(queue, qu)
                 else:
                     send_message(id, f"{name} уже в очереди.")
             elif ("#имя" in msg or "#название" in msg) and have_queue:
@@ -399,7 +399,7 @@ if __name__ == "__main__":
                         send_message(id, "Очередь пуста")
                     else:
                         if have_name:
-                            fixation(queue)
+                            fixation(queue, qu)
                         res = ""
                         if not no_message:
                             res += f"{deleted} был(а) удален(а) из очереди\n"
@@ -415,7 +415,7 @@ if __name__ == "__main__":
                 try:
                     if qu.quit(full_name()):
                         if have_name:
-                            fixation(queue)
+                            fixation(queu, qu)
                         if not no_message:
                             send_message(id, f"{full_name()} вышел(вышла) из очереди")
                     else:
@@ -435,7 +435,7 @@ if __name__ == "__main__":
                 if qu.get_name() == "":
                     send_message(id, "Нельзя сохранить очередь без названия")
                 else:
-                    if fixation(queue):
+                    if fixation(queue, qu):
                         send_message(id, "Очередь сохранена.")
                     else:
                         send_message(id, "Очередь перезаписана")
