@@ -157,6 +157,10 @@ def fixation(queue):
     for num, i in enumerate(queue[id]):
         if qu.get_name() == i.get_name():
             queue[id][num] = copy.deepcopy(qu)
+            if not os.path.exists(f"{os.path.dirname(os.getcwd())}\\queue_file"):
+                os.mkdir(f"{os.path.dirname(os.getcwd())}\\queue_file")
+            with open(f"{os.path.dirname(os.getcwd())}\\queue_file\\queue.pkl", 'wb') as f:
+                pickle.dump(queue, f)
             return False
     queue[id].append(copy.deepcopy(qu))
     if not os.path.exists(f"{os.path.dirname(os.getcwd())}\\queue_file"):
@@ -185,10 +189,6 @@ def unfix(queue, name):
         send_message(id, "Очередь не на сервере.")
 
 
-
-should_quit = False
-
-
 def exit_any():
     while True:
         print("Enter exit to finish process")
@@ -201,6 +201,7 @@ def do_wait(buf, id):
     time.sleep(120)
     buf[id][4] = False
     send_message(id, "Можете фиксировать.")
+
 
 def pop_timer(buf, id):
     time.sleep(5)
@@ -365,6 +366,17 @@ if __name__ == "__main__":
                         send_message(id, "Ошибка добавления в очередь")
                 else:
                     send_message(id, "Ожидание начала очереди, вы не внесены.")
+            elif "#добавить" in msg and have_queue:
+                name = event.obj['message']['text']
+                name = name.replace("#добавить", "").strip()
+                name = name.replace("#Добавить", "").strip()
+                if qu.add(name):
+                    if not no_message:
+                        send_message(id, f"{name} внесен(а) в очередь")
+                    if have_name:
+                        fixation(queue)
+                else:
+                    send_message(id, f"{name} уже в очереди.")
             elif ("#имя" in msg or "#название" in msg) and have_queue:
                 name = event.obj['message']['text']
                 name = name.replace("#имя", "").strip()
@@ -590,5 +602,6 @@ if __name__ == "__main__":
                                  "а вы останетесь замороженным. \n"
                                  "#разморозка – убрать эффект заморозки\n"
                                  "#молчи – не отправлять сообщения на каждое действие.\n"
-                                 "#говори – снова отправлять сообщения на действие"
+                                 "#говори – снова отправлять сообщения на действие\n"
+                                 "#добавить [имя] – добавить определённого человека в очередь"
                              )
