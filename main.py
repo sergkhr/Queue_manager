@@ -381,21 +381,24 @@ if __name__ == "__main__":
                 if not no_message:
                     send_message(id, f"Установлено описание: {msg}")
             elif msg == "#поп":
-                deleted = qu.pop()
-                if deleted == "-":
-                    send_message(id, "Очередь пуста")
-                elif not pop_wait:
-                    if have_name:
-                        fixation(queue)
-                    res = ""
-                    if not no_message:
-                        res += f"{deleted} был(а) удален(а) из очереди\n"
-                    next = qu.get_first()
-                    if next != "":
-                        res += f"Следующий(-ая): {next}"
-                    send_message(id, res)
-                    buf[id][5] = True
-                    Thread(target=pop_wait, args=(buf, id,)).start()
+                if not pop_wait:
+                    deleted = qu.pop()
+                    if deleted == "-":
+                        send_message(id, "Очередь пуста")
+                    else:
+                        if have_name:
+                            fixation(queue)
+                        res = ""
+                        if not no_message:
+                            res += f"{deleted} был(а) удален(а) из очереди\n"
+                        next = qu.get_first()
+                        if next != "":
+                            res += f"Следующий(-ая): {next}"
+                        send_message(id, res)
+                        buf[id][5] = True
+                        Thread(target=pop_wait, args=(buf, id,)).start()
+                else:
+                    send_message(id, "Защита двойного удаления, 5сек.")
             elif msg == "#выхожу":
                 try:
                     if qu.quit(full_name()):
