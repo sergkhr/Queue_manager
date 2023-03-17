@@ -329,6 +329,7 @@ if __name__ == "__main__":
                         flag = True
                         buf[id][0] = copy.deepcopy(i)
                         buf[id][1] = True
+                        buf[id][2] = True
                         send_message(id, f"Очередь {name} была запущена.")
                 if not flag:
                     send_message(id, "Очередь не найдена.")
@@ -471,6 +472,7 @@ if __name__ == "__main__":
                         if not have_queue:
                             buf[id][0] = copy.deepcopy(i)
                             buf[id][1] = True
+                            buf[id][2]
                             send_message(id, "Очередь была сменена")
                         else:
                             state[id].append("подтверждение")
