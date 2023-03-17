@@ -396,7 +396,7 @@ if __name__ == "__main__":
                             res += f"Следующий(-ая): {next}"
                         send_message(id, res)
                         buf[id][5] = True
-                        Thread(target=pop_wait, args=(buf, id,)).start()
+                        Thread(target=pop_timer, args=(buf, id,)).start()
                 else:
                     send_message(id, "Защита двойного удаления, 5сек.")
             elif msg == "#выхожу":
