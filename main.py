@@ -202,6 +202,11 @@ def do_wait(buf, id):
     buf[id][4] = False
     send_message(id, "Можете фиксировать.")
 
+def pop_timer(buf, id):
+    time.sleep(5)
+    buf[id][5] = False
+
+
 if __name__ == "__main__":
     buf = {}
     commands = "#имя #описание #фиксирую #поп #выхожу #очередь #фиксация #анфикс #пропустить #заморозка #разморозка"
@@ -261,11 +266,13 @@ if __name__ == "__main__":
                 buf[id].append(False)
                 buf[id].append(False)
                 buf[id].append(False)
+                buf[id].append(False)
             qu = buf[id][0]
             have_queue = buf[id][1]
             have_name = buf[id][2]
             no_message = buf[id][3]
             waiting = buf[id][4]
+            pop_wait = buf[id][5]
             msg = event.obj['message']['text'].lower()
             if "#" in msg:
                 print(f"Get {msg}")
@@ -302,6 +309,7 @@ if __name__ == "__main__":
             elif msg == "#запуск" and not have_queue or msg == "#начать" and not have_queue:
                 buf[id][1] = True
                 buf[id][4] = True
+                Thread(target=do_wait, args=(buf,id,)).start()
                 keyboard = VkKeyboard(inline=True)
                 keyboard.add_button("#фиксирую", color=VkKeyboardColor.POSITIVE)
                 vk.messages.send(
@@ -376,16 +384,18 @@ if __name__ == "__main__":
                 deleted = qu.pop()
                 if deleted == "-":
                     send_message(id, "Очередь пуста")
-                else:
+                elif not pop_wait:
                     if have_name:
                         fixation(queue)
                     res = ""
                     if not no_message:
                         res += f"{deleted} был(а) удален(а) из очереди\n"
-                    next = qu.get_first
+                    next = qu.get_first()
                     if next != "":
                         res += f"Следующий(-ая): {next}"
                     send_message(id, res)
+                    buf[id][5] = True
+                    Thread(target=pop_wait, args=(buf, id,)).start()
             elif msg == "#выхожу":
                 try:
                     if qu.quit(full_name()):
