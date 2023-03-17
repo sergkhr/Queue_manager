@@ -224,7 +224,7 @@ if __name__ == "__main__":
                     while first_name.find("i") != -1:
                         i = first_name.find("i")
                         if first_name[i + 1] in bukvi or first_name[i - 1] in bukvi:
-                            first_name = first_name.replace("i", "", 1)
+                            first_name = first_name.replace("i", "и", 1)
                         else:
                             break
                     while last_name.find("i") != -1:
@@ -295,7 +295,7 @@ if __name__ == "__main__":
                 vk.messages.send(
                     peer_id=id,
                     random_id=get_random_id(),
-                    message="Очередь запущена. Чтобы добавить себя в очередь, "
+                    message="@all, Очередь запущена. Чтобы добавить себя в очередь, "
                             "напишите #фиксирую. Чтобы убрать очередь, напишите #выход. "
                             "Чтобы получить все команды очереди, введите #помощь", keyboard=keyboard.get_keyboard())
             elif "#запуск" in msg and not have_queue:
@@ -373,16 +373,13 @@ if __name__ == "__main__":
                     send_message(id, res)
             elif msg == "#выхожу":
                 try:
-                    user_get = vk.users.get(user_ids=event.obj['message']['from_id'])
-                    first_name = user_get[0]['first_name']
-                    last_name = user_get[0]['last_name']
-                    if qu.quit(first_name + " " + last_name):
+                    if qu.quit(full_name()):
                         if have_name:
                             fixation(queue)
                         if not no_message:
-                            send_message(id, f"{first_name} {last_name} вышел(вышла) из очереди")
+                            send_message(id, f"{full_name()} вышел(вышла) из очереди")
                     else:
-                        send_message(id, f"{first_name} {last_name} не в очереди")
+                        send_message(id, f"{full_name()} не в очереди")
                 except BaseException as ex:
                     print(ex)
                     send_message(id, "Ошибка выхода из очереди")
