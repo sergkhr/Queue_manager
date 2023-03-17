@@ -229,6 +229,10 @@ if __name__ == "__main__":
     have_queue = False
     for event in longpoll.listen():
         if event.type == VkBotEventType.MESSAGE_NEW and event.from_chat:
+            id = event.obj['message']['peer_id']
+            #print(event.obj)
+            #send_message(id,"удолю")
+            #vk.messages.delete(message_ids=int(event.obj['message']['conversation_message_id'])+1, delete_for_all=1)
 
             def full_name():
                 try:
@@ -254,8 +258,6 @@ if __name__ == "__main__":
                     send_message(id, "Ошибка пользователя.")
                     return ""
 
-
-            id = event.obj['message']['peer_id']
             if id not in state:
                 state[id] = []
             if id not in queue:
@@ -416,7 +418,7 @@ if __name__ == "__main__":
                 try:
                     if qu.quit(full_name()):
                         if have_name:
-                            fixation(queu, qu)
+                            fixation(queue, qu)
                         if not no_message:
                             send_message(id, f"{full_name()} вышел(вышла) из очереди")
                     else:
@@ -472,7 +474,7 @@ if __name__ == "__main__":
                         if not have_queue:
                             buf[id][0] = copy.deepcopy(i)
                             buf[id][1] = True
-                            buf[id][2]
+                            buf[id][2] = True
                             send_message(id, "Очередь была сменена")
                         else:
                             state[id].append("подтверждение")
@@ -506,20 +508,22 @@ if __name__ == "__main__":
                     send_message(id, "Ошибка пропуска человека")
             elif msg == "#заморозка":
                 res = qu.freeze(full_name())
-                if res == "+":
-                    send_message(id, f"{full_name()} был(а) заморожен(а). Чтобы разморозиться, введите #разморозка")
-                elif res == "+-":
-                    send_message(id, f"{full_name()} уже заморожен(а).")
-                else:
-                    send_message(id, f"{full_name()} не в очереди.")
+                if not no_message:
+                    if res == "+":
+                        send_message(id, f"{full_name()} был(а) заморожен(а). Чтобы разморозиться, введите #разморозка")
+                    elif res == "+-":
+                        send_message(id, f"{full_name()} уже заморожен(а).")
+                    else:
+                        send_message(id, f"{full_name()} не в очереди.")
             elif msg == "#разморозка":
                 res = qu.unfreeze(full_name())
-                if res == "+":
-                    send_message(id, f"{full_name()} был(а) разморожен(а).")
-                elif res == "+-":
-                    send_message(id, f"{full_name()} не заморожен(а).")
-                else:
-                    send_message(id, f"{full_name()} не в очереди.")
+                if not no_message:
+                    if res == "+":
+                        send_message(id, f"{full_name()} был(а) разморожен(а).")
+                    elif res == "+-":
+                        send_message(id, f"{full_name()} не заморожен(а).")
+                    else:
+                        send_message(id, f"{full_name()} не в очереди.")
             elif "#покажи" in msg:
                 name = event.obj['message']['text']
                 name = name.replace("#покажи", "").strip()
