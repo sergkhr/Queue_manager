@@ -10,6 +10,7 @@ from vk_api.utils import get_random_id
 import copy
 import pickle
 from threading import Thread
+import time
 
 
 class Queue:
@@ -80,7 +81,10 @@ class Queue:
 
     def get_first(self) -> str:
         if len(self.queued_humans) != 0:
-            return self.queued_humans[0]
+            for i in range(len(self.queued_humans)):
+                if not self.humans_freeze[i]:
+                    return self.queued_humans[i]
+            return ""
         else:
             return ""
 
@@ -193,6 +197,11 @@ def exit_any():
             os._exit(0)
 
 
+def do_wait(buf, id):
+    time.sleep(120)
+    buf[id][4] = False
+    send_message(id, "Можете фиксировать.")
+
 if __name__ == "__main__":
     buf = {}
     commands = "#имя #описание #фиксирую #поп #выхожу #очередь #фиксация #анфикс #пропустить #заморозка #разморозка"
@@ -251,10 +260,12 @@ if __name__ == "__main__":
                 buf[id].append(False)
                 buf[id].append(False)
                 buf[id].append(False)
+                buf[id].append(False)
             qu = buf[id][0]
             have_queue = buf[id][1]
             have_name = buf[id][2]
             no_message = buf[id][3]
+            waiting = buf[id][4]
             msg = event.obj['message']['text'].lower()
             if "#" in msg:
                 print(f"Get {msg}")
@@ -290,12 +301,13 @@ if __name__ == "__main__":
                         send_message(id, "Удаление очереди отменено.")
             elif msg == "#запуск" and not have_queue or msg == "#начать" and not have_queue:
                 buf[id][1] = True
+                buf[id][4] = True
                 keyboard = VkKeyboard(inline=True)
                 keyboard.add_button("#фиксирую", color=VkKeyboardColor.POSITIVE)
                 vk.messages.send(
                     peer_id=id,
                     random_id=get_random_id(),
-                    message="@all, Очередь запущена. Чтобы добавить себя в очередь, "
+                    message="@all, Очередь запущена. Фиксировать можно через 2 минуты. Чтобы добавить себя в очередь, "
                             "напишите #фиксирую. Чтобы убрать очередь, напишите #выход. "
                             "Чтобы получить все команды очереди, введите #помощь", keyboard=keyboard.get_keyboard())
             elif "#запуск" in msg and not have_queue:
@@ -331,17 +343,20 @@ if __name__ == "__main__":
                 send_message(id, "В данный момент очереди нет. "
                                  "Чтобы запустить, используйте команду #запуск")
             elif "#фиксирую" in msg and have_queue:
-                try:
-                    if qu.add(full_name()):
-                        if not no_message:
-                            send_message(id, f"{full_name()} внесен(а) в очередь")
-                        if have_name:
-                            fixation(queue)
-                    else:
-                        send_message(id, f"{full_name()} уже в очереди.")
-                except BaseException as ex:
-                    print(ex)
-                    send_message(id, "Ошибка добавления в очередь")
+                if not waiting:
+                    try:
+                        if qu.add(full_name()):
+                            if not no_message:
+                                send_message(id, f"{full_name()} внесен(а) в очередь")
+                            if have_name:
+                                fixation(queue)
+                        else:
+                            send_message(id, f"{full_name()} уже в очереди.")
+                    except BaseException as ex:
+                        print(ex)
+                        send_message(id, "Ошибка добавления в очередь")
+                else:
+                    send_message(id, "Ожидание начала очереди, вы не внесены.")
             elif ("#имя" in msg or "#название" in msg) and have_queue:
                 name = event.obj['message']['text']
                 name = name.replace("#имя", "").strip()
@@ -362,12 +377,12 @@ if __name__ == "__main__":
                 if deleted == "-":
                     send_message(id, "Очередь пуста")
                 else:
-                    if have_name:#
+                    if have_name:
                         fixation(queue)
                     res = ""
                     if not no_message:
-                        res += f"{deleted} был удалён из очереди\n"
-                    next = qu.get_first()
+                        res += f"{deleted} был(а) удален(а) из очереди\n"
+                    next = qu.get_first
                     if next != "":
                         res += f"Следующий(-ая): {next}"
                     send_message(id, res)
