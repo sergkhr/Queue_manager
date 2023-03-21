@@ -1,6 +1,7 @@
 import os
 import sys
 
+import requests.exceptions
 import vk_api
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from vk_api.longpoll import VkLongPoll, VkEventType
@@ -127,33 +128,7 @@ class Queue:
         return "-"
 
 
-def send_message(id, msg, stiker=None, attach=None):
-    try:
-        vk.messages.send(random_id=get_random_id(),
-                         peer_id=id,
-                         message=msg)
-    except BaseException as ex:
-        print(ex)
-        return
-
-
-def send_photo(peer_id, img_req, message=None):
-    upload = vk_api.VkUpload(vk_session)
-    photo = upload.photo_messages(img_req)[0]
-    owner_id = photo['owner_id']
-    photo_id = photo['id']
-    attachment = f'photo{owner_id}_{photo_id}'
-    post = {'peer_id': peer_id, 'random_id': 0, "attachment": attachment}
-    if message is not None:
-        post['message'] = message
-    try:
-        vk_session.method('messages.send', post)
-    except BaseException:
-        send_message(id, "Не удалось отправить картинку")
-        return
-
-
-def fixation(queue,qu):
+def fixation(id, queue, qu):
     for num, i in enumerate(queue[id]):
         if qu.get_name() == i.get_name():
             queue[id][num] = copy.deepcopy(qu)
@@ -170,25 +145,6 @@ def fixation(queue,qu):
     return True
 
 
-def unfix(queue, name):
-    flag = False
-    for num, i in enumerate(queue[id]):
-        if name == i.get_name():
-            flag = True
-            keyboard = VkKeyboard(inline=True)
-            keyboard.add_button("Да", color=VkKeyboardColor.POSITIVE)
-            keyboard.add_button("Нет", color=VkKeyboardColor.NEGATIVE)
-            vk.messages.send(
-                peer_id=id,
-                random_id=get_random_id(),
-                message="Вы уверены. что хотите"
-                        " удалить очередь?", keyboard=keyboard.get_keyboard())
-            state[id].append("удаление")
-            state[id].append(num)
-    if not flag:
-        send_message(id, "Очередь не на сервере.")
-
-
 def exit_any():
     while True:
         print("Enter exit to finish process")
@@ -197,18 +153,7 @@ def exit_any():
             os._exit(0)
 
 
-def do_wait(buf, id):
-    time.sleep(120)
-    buf[id][4] = False
-    send_message(id, "Можете фиксировать.")
-
-
-def pop_timer(buf, id):
-    time.sleep(5)
-    buf[id][5] = False
-
-
-if __name__ == "__main__":
+def main():
     buf = {}
     commands = "#имя #описание #фиксирую #поп #выхожу #очередь #фиксация #анфикс #пропустить #заморозка #разморозка"
     commands = commands.split()
@@ -225,14 +170,67 @@ if __name__ == "__main__":
         with open(f'{os.path.dirname(os.getcwd())}\\queue_file\\queue.pkl', 'rb') as f:
             queue = pickle.load(f)
             print("Queue loaded")
+
+    def send_message(id, msg, stiker=None, attach=None):
+        try:
+            vk.messages.send(random_id=get_random_id(),
+                             peer_id=id,
+                             message=msg)
+        except BaseException as ex:
+            print(ex)
+            return
+
+    def send_photo(peer_id, img_req, message=None):
+        upload = vk_api.VkUpload(vk_session)
+        photo = upload.photo_messages(img_req)[0]
+        owner_id = photo['owner_id']
+        photo_id = photo['id']
+        attachment = f'photo{owner_id}_{photo_id}'
+        post = {'peer_id': peer_id, 'random_id': 0, "attachment": attachment}
+        if message is not None:
+            post['message'] = message
+        try:
+            vk_session.method('messages.send', post)
+        except BaseException:
+            send_message(id, "Не удалось отправить картинку")
+            return
+
+    def unfix(id, queue, name):
+        flag = False
+        for num, i in enumerate(queue[id]):
+            if name == i.get_name():
+                flag = True
+                keyboard = VkKeyboard(inline=True)
+                keyboard.add_button("Да", color=VkKeyboardColor.POSITIVE)
+                keyboard.add_button("Нет", color=VkKeyboardColor.NEGATIVE)
+                vk.messages.send(
+                    peer_id=id,
+                    random_id=get_random_id(),
+                    message="Вы уверены. что хотите"
+                            " удалить очередь?", keyboard=keyboard.get_keyboard())
+                state[id].append("удаление")
+                state[id].append(num)
+        if not flag:
+            send_message(id, "Очередь не на сервере.")
+
+    def do_wait(buf, id):
+        time.sleep(120)
+        buf[id][4] = False
+        send_message(id, "Можете фиксировать.")
+
+    def pop_timer(buf, id):
+        time.sleep(5)
+        buf[id][5] = False
+
     count = 0
     have_queue = False
     for event in longpoll.listen():
         if event.type == VkBotEventType.MESSAGE_NEW and event.from_chat:
             id = event.obj['message']['peer_id']
-            #print(event.obj)
-            #send_message(id,"удолю")
-            #vk.messages.delete(message_ids=int(event.obj['message']['conversation_message_id'])+1, delete_for_all=1)
+
+            # print(event.obj)
+            # send_message(id,"удолю")
+            # vk.messages.delete(message_ids=int(event.obj['message']['conversation_message_id'])+1, delete_for_all=1)
 
             def full_name():
                 try:
@@ -312,7 +310,7 @@ if __name__ == "__main__":
             elif msg == "#запуск" and not have_queue or msg == "#начать" and not have_queue:
                 buf[id][1] = True
                 buf[id][4] = True
-                Thread(target=do_wait, args=(buf,id,)).start()
+                Thread(target=do_wait, args=(buf, id,)).start()
                 keyboard = VkKeyboard(inline=True)
                 keyboard.add_button("#фиксирую", color=VkKeyboardColor.POSITIVE)
                 vk.messages.send(
@@ -361,7 +359,7 @@ if __name__ == "__main__":
                             if not no_message:
                                 send_message(id, f"{full_name()} внесен(а) в очередь")
                             if have_name:
-                                fixation(queue, qu)
+                                fixation(id, queue, qu)
                         else:
                             send_message(id, f"{full_name()} уже в очереди.")
                     except BaseException as ex:
@@ -377,7 +375,7 @@ if __name__ == "__main__":
                     if not no_message:
                         send_message(id, f"{name} внесен(а) в очередь")
                     if have_name:
-                        fixation(queue, qu)
+                        fixation(id, queue, qu)
                 else:
                     send_message(id, f"{name} уже в очереди.")
             elif ("#имя" in msg or "#название" in msg) and have_queue:
@@ -402,7 +400,7 @@ if __name__ == "__main__":
                         send_message(id, "Очередь пуста")
                     else:
                         if have_name:
-                            fixation(queue, qu)
+                            fixation(id, queue, qu)
                         res = ""
                         if not no_message:
                             res += f"{deleted} был(а) удален(а) из очереди\n"
@@ -418,7 +416,7 @@ if __name__ == "__main__":
                 try:
                     if qu.quit(full_name()):
                         if have_name:
-                            fixation(queue, qu)
+                            fixation(id, queue, qu)
                         if not no_message:
                             send_message(id, f"{full_name()} вышел(вышла) из очереди")
                     else:
@@ -438,14 +436,14 @@ if __name__ == "__main__":
                 if qu.get_name() == "":
                     send_message(id, "Нельзя сохранить очередь без названия")
                 else:
-                    if fixation(queue, qu):
+                    if fixation(id, queue, qu):
                         send_message(id, "Очередь сохранена.")
                     else:
                         send_message(id, "Очередь перезаписана")
             elif msg == "#анфикс":
-                unfix(queue, qu.get_name())
+                unfix(id, queue, qu.get_name())
             elif msg == "#резня":
-                unfix(queue, qu.get_name())
+                unfix(id, queue, qu.get_name())
                 buf[id][0].clear()
                 buf[id][1] = False
                 buf[id][2] = False
@@ -455,7 +453,7 @@ if __name__ == "__main__":
                 name = event.obj['message']['text']
                 name = name.replace("#анфикс", "").strip()
                 name = name.replace("#Анфикс", "").strip()
-                unfix(queue, name)
+                unfix(id, queue, name)
             elif msg == "#очереди":
                 result = ""
                 for num, i in enumerate(queue[id]):
@@ -611,3 +609,12 @@ if __name__ == "__main__":
                                  "#говори – снова отправлять сообщения на действие\n"
                                  "#добавить [имя] – добавить определённого человека в очередь"
                              )
+
+
+if __name__ == "__main__":
+    while True:
+        try:
+            main()
+        except requests.exceptions.ReadTimeout:
+            print("readtimeout")
+            time.sleep(600)
