@@ -4,6 +4,7 @@
   "description": "- Комолов Тимур Витальевич\r - Вохрин Олег Леонидович\r - Хречко Сергей Викторович",
   "main": "index.js",
   "scripts": {
+    "start": "npx tsc && node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -15,6 +16,9 @@
   },
   "type": "module",
   "devDependencies": {
-    "@types/cors": "^2.8.13"
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.15.5",
+    "typescript": "^5.0.2"
   }
 }

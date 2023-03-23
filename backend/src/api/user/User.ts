@@ -1,5 +1,8 @@
 export default class User {
-    constructor(user) {
+    name: string;
+    login: string;
+    _password: string;
+    constructor(user: User) {
         this.name = user.name;
         this.login = user.login;
         this._password = user.password;
@@ -7,7 +10,7 @@ export default class User {
     get password() {
         return ""
     }
-    checkPassword(pass) {
+    checkPassword(pass: string) {
         return pass == this._password;
     }
 }

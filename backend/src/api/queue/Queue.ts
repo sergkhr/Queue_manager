@@ -1,12 +1,16 @@
+type Config = {
+    owner: number,
+    accessType: string,
+    length: number
+}
+
 export default class Queue {
-    /*
-    config {
-        owner: int,
-        accessType: ="public" || "private",
-        length: int =Infinity,
-    }
-    */
-    constructor(queue) {
+    name: string;
+    description: string;
+    config: Config;
+    queuedPeople: number[];
+
+    constructor(queue: Queue) {
         this.name = queue.name;
         this.description = queue.description || "Default description"
         this.config = {
@@ -19,7 +23,10 @@ export default class Queue {
     getPeopleList() {
         return Array.from(this.queuedPeople);
     }
-    addPeople(peopleId) {
+    // addPeople() {
+        
+    // }
+    addPeople(peopleId: number) {
         if (!this.config.length || this.queuedPeople.length < this.config.length) {
             this.queuedPeople.push(peopleId);
         }

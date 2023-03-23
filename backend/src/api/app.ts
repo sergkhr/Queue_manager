@@ -7,6 +7,11 @@ import UserManager from "./user/UserManager.js";
 import Result from "./Result.js";
 
 export default class Application {
+    expressApp: Express.Application;
+    queueManager: QueueManager;
+    userManager: UserManager;
+    listener: any;
+
     constructor() {
         this.expressApp = Express();
         this.queueManager = new QueueManager();
@@ -19,7 +24,7 @@ export default class Application {
         this.setupHandlers();
     }
 
-    start(config) {
+    start(config: {port: number, host: string}) {
         this.listener = this.expressApp.listen(config.port, config.host, function() {
             console.log(`App listening at port ${config.port}`);
         });
@@ -45,7 +50,7 @@ export default class Application {
         console.log("Saved");
     }
 
-    adminPanelHandler(req, res) {
+    adminPanelHandler(req: Express.Request, res: Express.Response) {
         console.log("Admin command got: " + JSON.stringify(req.body));
         if (req.body.command == "turnoff") {
             res.json({text: "Turning off"});
@@ -56,12 +61,12 @@ export default class Application {
         }
     }
 
-    usersGetHandler(req, res) {
+    usersGetHandler(req: Express.Request, res: Express.Response) {
         console.log("Users get");
         console.log(JSON.stringify(this.userManager.getUsersList()));
         res.json(this.userManager.getUsersList());
     }
-    usersPostHandler(req, res) {
+    usersPostHandler(req: Express.Request, res: Express.Response) {
         console.log("Users post");
         if (req.body.command = "create") {
             // let user = {
@@ -75,12 +80,12 @@ export default class Application {
         res.json(new Result(false, "No command Entered"));
     }
 
-    queueGetHandler(req, res) {
+    queueGetHandler(req: Express.Request, res: Express.Response) {
         console.log("Queues get");
         console.log(JSON.stringify(this.queueManager.getQueueList()));
         res.json(this.queueManager.getQueueList());
     }
-    queuePostHandler(req, res) {
+    queuePostHandler(req: Express.Request, res: Express.Response) {
         console.log("Queues post");
         console.log(JSON.stringify(req.body));
         if (req.body.command = "create") {
@@ -98,9 +103,8 @@ export default class Application {
         }
     }
 
-    userLoginHandler(req, res) {
+    userLoginHandler(req: Express.Request, res: Express.Response) {
         console.log("User login");
         console.log(JSON.stringify(req.body));
-        
     }
 }

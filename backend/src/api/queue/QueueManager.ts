@@ -3,8 +3,9 @@ import UserManager from "../user/UserManager.js";
 import fs from "fs"
 
 export default class QueueManager {
+    queues: Queue[] = [];
+
     constructor() {
-        this.queues = [];
         this.load();
     }
     load() {
@@ -18,7 +19,7 @@ export default class QueueManager {
         fs.writeFileSync("data/queues.json", JSON.stringify(this.queues, null, 4));
         console.log("Queues saved: " + this.queues.length);
     }
-    createQueue (queue) {
+    createQueue (queue: Queue) {
         if (!queue.name) {
             return false;
         } 

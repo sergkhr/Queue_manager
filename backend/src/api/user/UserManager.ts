@@ -4,8 +4,8 @@ import fs from "fs"
 import Result from "../Result.js";
 
 export default class UserManager {
+    users: User[] = [];
     constructor() {
-        this.users = [];
         this.load();
     }
     load() {
@@ -22,10 +22,10 @@ export default class UserManager {
     getUsersList() {
         return this.users;
     }
-    getUser(login) {
-        return this.users[id];
-    }
-    checkPassword(login, password) {
+    // getUser(login: string) {
+    //     return this.users[id];
+    // }
+    checkPassword(login: string, password: string) {
         for (let i in this.users) {
             if (this.users[i].login == login) {
                 if (this.users[i].checkPassword(password)) {
@@ -38,7 +38,7 @@ export default class UserManager {
         return new Result(false, "User with login '" + login + "' not found");
     }
 
-    userIsExist(login) {
+    userIsExist(login: string) {
         for (let i in this.users) {
             if (this.users[i].login == login) {
                 return true;
@@ -46,7 +46,7 @@ export default class UserManager {
         }
         return false;
     }
-    createUser(user) {
+    createUser(user: User) {
         if (this.userIsExist(user.login)) {
             return new Result(false, "User with name '" + user.name + "' alredy exist");
         }
