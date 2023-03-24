@@ -8,7 +8,7 @@ export default class Queue {
     name: string;
     description: string;
     config: Config;
-    queuedPeople: number[];
+    queuedPeople: {}[];
 
     constructor(queue: Queue) {
         this.name = queue.name;
@@ -23,12 +23,19 @@ export default class Queue {
     getPeopleList() {
         return Array.from(this.queuedPeople);
     }
-    // addPeople() {
-        
-    // }
-    addPeople(peopleId: number) {
+    addPeople(login: string, loginType: string) {
         if (!this.config.length || this.queuedPeople.length < this.config.length) {
-            this.queuedPeople.push(peopleId);
+            this.queuedPeople.push({
+                login: login,
+                loginType: loginType
+            });
+            return true;
         }
+        return false;
     }
+    // addPeople(peopleId: number) {
+    //     if (!this.config.length || this.queuedPeople.length < this.config.length) {
+    //         this.queuedPeople.push(peopleId);
+    //     }
+    // }
 }

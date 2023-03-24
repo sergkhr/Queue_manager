@@ -46,6 +46,25 @@ export default class UserManager {
         }
         return false;
     }
+    
+    getUser(login: string, loginType: string = "site") {
+        if (loginType == "vk") {
+            for (let i in this.users) {
+                if (this.users[i].vk == login) {
+                    return this.users[i];
+                }
+            }
+            return null;
+        } else {
+            for (let i in this.users) {
+                if (this.users[i].login == login) {
+                    return this.users[i];
+                }
+            }
+            return null;
+        }
+    }
+
     createUser(user: User) {
         if (this.userIsExist(user.login)) {
             return new Result(false, "User with name '" + user.name + "' alredy exist");

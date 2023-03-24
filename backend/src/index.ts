@@ -4,8 +4,8 @@ import fs from "node:fs"
 
 let config = JSON.parse(fs.readFileSync("config.json", "utf8"));
 
-var app = new Application();
-app.start(config);
+var app = new Application(config);
+app.start();
 
 process.on('SIGINT', () => {
     app.save();

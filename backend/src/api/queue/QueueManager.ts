@@ -27,6 +27,22 @@ export default class QueueManager {
         return true;
     }
     getQueueList () {
-        return this.queues;
+        let res: {}[] = [];
+        for (let i in this.queues) {
+            res.push({
+                name: this.queues[i].name,
+                description: this.queues[i].description
+            });
+        }
+        return res;
     }
+    getQueue (name: string) {
+        for (let i in this.queues) {
+            if (this.queues[i].name == name) {
+                return this.queues[i];
+            }
+        }
+        return null;
+    }
+    
 }
