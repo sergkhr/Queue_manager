@@ -1,9 +1,11 @@
 export default class Result {
     success: boolean;
-    description: string;
+    description: any;
 
-    constructor(success: boolean, description = "Something went wrong") {
+    constructor(success: boolean, description = "") {
         this.success = success;
-        this.description = description;
+        if (description != "") {
+            this.description = description;
+        }
     }
 }
