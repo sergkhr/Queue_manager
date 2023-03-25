@@ -22,9 +22,6 @@ export default class UserManager {
     getUsersList() {
         return this.users;
     }
-    // getUser(login: string) {
-    //     return this.users[id];
-    // }
     checkPassword(login: string, password: string) {
         for (let i in this.users) {
             if (this.users[i].login == login) {

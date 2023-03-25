@@ -33,9 +33,4 @@ export default class Queue {
         }
         return false;
     }
-    // addPeople(peopleId: number) {
-    //     if (!this.config.length || this.queuedPeople.length < this.config.length) {
-    //         this.queuedPeople.push(peopleId);
-    //     }
-    // }
 }

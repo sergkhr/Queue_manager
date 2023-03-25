@@ -81,11 +81,6 @@ export default class Application {
     usersPostHandler(req: Express.Request, res: Express.Response) {
         console.log("Users post");
         if (req.body.command = "create") {
-            // let user = {
-            //     login: req.body.arguments.login,
-            //     password: req.body.arguments.password,
-            //     name: req.body.arguments.name
-            // }
             res.json(this.userManager.createUser(req.body.arguments))
             return;
         }
