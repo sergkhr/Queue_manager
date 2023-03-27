@@ -129,18 +129,19 @@ class Queue:
 
 
 def fixation(id, queue, qu):
+    path = os.path.dirname(os.getcwd())
     for num, i in enumerate(queue[id]):
         if qu.get_name() == i.get_name():
             queue[id][num] = copy.deepcopy(qu)
-            if not os.path.exists(f"{os.path.dirname(os.getcwd())}\\queue_file"):
-                os.mkdir(f"{os.path.dirname(os.getcwd())}\\queue_file")
-            with open(f"{os.path.dirname(os.getcwd())}\\queue_file\\queue.pkl", 'wb') as f:
+            if not os.path.exists(f"{path}\\queue_file"):
+                os.mkdir(f"{path}\\queue_file")
+            with open(f"{path}\\queue_file\\queue.pkl", 'wb') as f:
                 pickle.dump(queue, f)
             return False
     queue[id].append(copy.deepcopy(qu))
-    if not os.path.exists(f"{os.path.dirname(os.getcwd())}\\queue_file"):
-        os.mkdir(f"{os.path.dirname(os.getcwd())}\\queue_file")
-    with open(f"{os.path.dirname(os.getcwd())}\\queue_file\\queue.pkl", 'wb') as f:
+    if not os.path.exists(f"{path}\\queue_file"):
+        os.mkdir(f"{path}\\queue_file")
+    with open(f"{path}\\queue_file\\queue.pkl", 'wb') as f:
         pickle.dump(queue, f)
     return True
 
