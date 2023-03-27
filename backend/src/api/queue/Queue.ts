@@ -9,8 +9,9 @@ export default class Queue {
     description: string;
     config: Config;
     queuedPeople: {}[];
+    vkConfs: number[];
 
-    constructor(queue: Queue) {
+    constructor(queue: Queue, vkConfs: number[] = []) {
         this.name = queue.name;
         this.description = queue.description || "Default description"
         this.config = {
@@ -19,10 +20,13 @@ export default class Queue {
             length: queue.config?.length || Infinity,
         }
         this.queuedPeople = [];
+        this.vkConfs = vkConfs;
     }
+
     getPeopleList() {
         return Array.from(this.queuedPeople);
     }
+
     addPeople(login: string, loginType: string) {
         if (!this.config.length || this.queuedPeople.length < this.config.length) {
             this.queuedPeople.push({
@@ -32,5 +36,9 @@ export default class Queue {
             return true;
         }
         return false;
+    }
+
+    linkVkConf(id: number) {
+        this.vkConfs.push(id);
     }
 }

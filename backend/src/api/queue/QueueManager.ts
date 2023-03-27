@@ -23,16 +23,24 @@ export default class QueueManager {
         if (!queue.name) {
             return false;
         } 
-        this.queues.push(new Queue(queue));
-        return true;
+        let newQueue = new Queue(queue)
+        this.queues.push(newQueue);
+        return newQueue;
     }
-    getQueueList () {
+    getQueueList (filter: any = {}, full: boolean = false) {
         let res: {}[] = [];
         for (let i in this.queues) {
-            res.push({
-                name: this.queues[i].name,
-                description: this.queues[i].description
-            });
+            if (!filter.vkConf || this.queues[i].vkConfs.includes(filter.vkConf)) {
+                if (full) {
+                    res.push(this.queues[i]);
+                } else {
+                    res.push({
+                        name: this.queues[i].name,
+                        description: this.queues[i].description
+                    });
+                }
+                
+            }
         }
         return res;
     }

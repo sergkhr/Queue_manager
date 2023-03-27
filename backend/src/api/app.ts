@@ -20,7 +20,7 @@ export default class Application {
         this.userManager = new UserManager();
         let app = this.expressApp;
         app.use(bodyParser.json());
-        this.setupHandlers(config.vk.port);
+        this.setupHandlers();
     }
 
     start() {
@@ -29,12 +29,15 @@ export default class Application {
         });
     }
 
-    setupHandlers(vkPort: number) {
+    setupHandlers() {
         let app = this.expressApp;
+        let vk = this.config.vk;
 
-        // app.use(cors({
-        //     origin: "localhost:" + vkPort
-        // }))
+        // Bot interface
+        // let botCors = cors({
+        //     origin: vk.address + ":" + vk.port
+        // })
+
         app.use(cors({
             origin: "*"
         }))
@@ -50,8 +53,6 @@ export default class Application {
         app.post('/queue/:name', this.queuePostHandler.bind(this));
 
         app.post('/users/:login', this.userLoginHandler.bind(this));
-
-        
     }
 
     save() {
@@ -90,7 +91,7 @@ export default class Application {
     queuesGetHandler(req: Express.Request, res: Express.Response) {
         console.log("Queues get");
         console.log(JSON.stringify(this.queueManager.getQueueList()));
-        res.json(this.queueManager.getQueueList());
+        res.json(this.queueManager.getQueueList({}, true));
     }
 
     queuesPostHandler(req: Express.Request, res: Express.Response) {
@@ -99,9 +100,17 @@ export default class Application {
         if (req.body.command = "create") {
             // let queue = {
             //     name: req.body.arguments.name,
+            //     owner: {
+            //         login: req.body.arguments.owner.login,
+            //         vkId: req.body.arguments.owner.vkId
+            //     }
             //     config: req.body.arguments.config
             // }
-            if (this.queueManager.createQueue(req.body.arguments)){
+            let queue = this.queueManager.createQueue(req.body.arguments);
+            if (queue) {
+                if (req.body.arguments.vkConf) {
+                    queue.linkVkConf(req.body.arguments.vkConf);
+                }
                 res.json(new Result(true));
             } else {
                 res.json(new Result(false));

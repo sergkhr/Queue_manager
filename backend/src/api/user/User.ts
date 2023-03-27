@@ -3,6 +3,7 @@ export default class User {
     login: string;
     _password: string;
     vk: string;
+    
     constructor(user: User) {
         this.name = user.name;
         this.login = user.login;
