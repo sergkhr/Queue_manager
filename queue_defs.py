@@ -3,152 +3,23 @@ import os
 import copy
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from private_api import *
+from classes import *
 import vk_api
 from vk_api.utils import get_random_id
 from threading import Thread
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 import time
 
-
 vk_session = vk_api.VkApi(token=token_api)
 longpoll = VkBotLongPoll(vk_session, 219286730)
 vk = vk_session.get_api()
 
 
-class Human:
-    def __init__(self, name="", user_id=0):
-        self.name = name
-        self.user_id = user_id
-        self.freeze = False
-
-    def get_name(self):
-        return self.name
-
-    def is_freezed(self):
-        return self.freeze
-
-    def get_user_id(self):
-        return self.user_id
-
-    def set_freeze(self, to_freeze):
-        self.freeze = to_freeze
-
-
-class Queue:
-    def __init__(self):
-        self.name = ""
-        self.queued_humans = []
-        self.description = ""
-
-    def show(self) -> str:
-        if len(self.queued_humans) == 0:
-            return "-"
-        result = ""
-        for i, who in enumerate(self.queued_humans):
-            result += f"{i + 1}) "
-            if self.queued_humans[i].is_freezed():
-                result += "❄"
-            result += who + "\n"
-        return result
-
-    def add(self, full_name, from_id=0) -> bool:
-        human = Human(full_name, from_id)
-        for i in self.queued_humans:
-            if full_name == i.get_name():
-                return False
-        self.queued_humans.append(human)
-        return True
-
-
-    def set_name(self, name):
-        self.name = name
-
-    def set_description(self, descr):
-        self.description = descr
-
-    def info(self) -> str:
-        if self.name != "":
-            if self.description != "":
-                descr = f"Описание: {self.description}"
-            else:
-                descr = ""
-            return f"Название: {self.name}\n {descr}"
-        else:
-            return ""
-
-    def clear(self):
-        self.queued_humans.clear()
-        self.name = ""
-        self.description = ""
-
-    def pop(self) -> str:
-        for i in range(len(self.queued_humans)):
-            if not self.queued_humans[i].is_freezed():
-                return self.queued_humans.pop(i)
-        return "-"
-
-    def quit(self, man) -> bool:
-        for num, i in enumerate(self.queued_humans):
-            if i.get_name() == man:
-                self.queued_humans.pop(num)
-                return True
-        return False
-
-    def get_name(self) -> str:
-        return self.name
-
-    def get_first(self) -> str:
-        if len(self.queued_humans) != 0:
-            for i in range(len(self.queued_humans)):
-                if not self.queued_humans[i].is_freezed():
-                    return self.queued_humans[i]
-            return ""
-        else:
-            return ""
-
-    def swap(self, man) -> str:
-        if len(self.queued_humans) < 1:
-            return "1"
-        for num, i in enumerate(self.queued_humans):
-            if i.get_name() == man:
-                if num + 1 > len(self.queued_humans) - 1:
-                    return "max"
-                if self.queued_humans[num].is_freezed():
-                    return "*"
-                while num < len(self.queued_humans) - 1:
-                    if self.queued_humans[num].is_freezed():
-                        num += 1
-                    else:
-                        buf = self.queued_humans[num]
-                        self.queued_humans[num] = self.queued_humans[num + 1]
-                        self.queued_humans[num + 1] = buf
-                        return self.queued_humans[num]
-                return "max"
-        return "none"
-
-    def freeze(self, man) -> str:
-        for num, i in enumerate(self.queued_humans):
-            if i == man:
-                if self.queued_humans[num].is_freezed():
-                    return "+-"
-                self.queued_humans[num].set_freeze(True)
-                return "+"
-        return "-"
-
-    def unfreeze(self, man) -> str:
-        for num, i in enumerate(self.queued_humans):
-            if i == man:
-                if not self.queued_humans[num].is_freezed():
-                    return "+-"
-                self.queued_humans[num].set_freeze(False)
-                return "+"
-        return "-"
-
 def send_message(id, msg, stiker=None, attach=None):
     try:
         vk.messages.send(random_id=get_random_id(),
-                             peer_id=id,
-                             message=msg)
+                         peer_id=id,
+                         message=msg)
     except BaseException as ex:
         print(ex)
         return
@@ -252,24 +123,26 @@ def commit(state, id, buf, msg, queue):
             state[id].clear()
             send_message(id, "Удаление очереди отменено.")
 
+
 def do_wait(buf, id):
     time.sleep(120)
-    buf[id][4] = False
-    send_message(id, "Можете фиксировать.")
-
-
-def create(buf, id):
     buf[id][1] = True
-    buf[id][4] = True
-    Thread(target=do_wait, args=(buf, id,)).start()
+    buf[id][4] = False
     keyboard = VkKeyboard(inline=True)
     keyboard.add_button("#фиксирую", color=VkKeyboardColor.POSITIVE)
     vk.messages.send(
         peer_id=id,
         random_id=get_random_id(),
-        message="@all, Очередь запущена. Фиксировать можно через 2 минуты. Чтобы добавить себя в очередь, "
-                "напишите #фиксирую. Чтобы убрать очередь, напишите #выход. "
-                "Чтобы получить все команды очереди, введите #помощь", keyboard=keyboard.get_keyboard())
+        message="Можете фиксировать.", keyboard=keyboard.get_keyboard())
+
+
+def create(buf, id):
+    buf[id][4] = True
+    Thread(target=do_wait, args=(buf, id,)).start()
+    send_message(id, "@all, Очередь запущена. Фиксировать можно через 2 минуты. Чтобы добавить себя в очередь, "
+                     "напишите #фиксирую. Чтобы убрать очередь, напишите #выход. "
+                     "Чтобы получить все команды очереди, введите #помощь")
+
 
 def multiply_create(name, id, buf, queue):
     flag = False
@@ -351,8 +224,8 @@ def pop(id, qu, queue, pop_wait, have_name, no_message, buf):
             if not no_message:
                 res += f"{deleted} был(а) удален(а) из очереди\n"
             next = qu.get_first()
-            if next != "":
-                res += f"Следующий(-ая): {next}"
+            if next.get_name() != "":
+                res += f"Следующий(-ая): [id{next.get_user_id()}|{next.get_name()}]"
             send_message(id, res)
             buf[id][5] = True
             Thread(target=pop_timer, args=(buf, id,)).start()

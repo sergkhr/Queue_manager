@@ -51,7 +51,7 @@ def main():
     for event in longpoll.listen():
         if event.type == VkBotEventType.MESSAGE_NEW and event.from_chat:
             id = event.obj['message']['peer_id']
-
+            #send_message(id, f"*id{event.obj['message']['from_id']}")
             # print(event.obj)
             # send_message(id,"удолю")
             # vk.messages.delete(message_ids=int(event.obj['message']['conversation_message_id'])+1, delete_for_all=1)
