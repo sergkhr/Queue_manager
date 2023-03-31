@@ -32,7 +32,7 @@ class Queue:
             result += f"{i + 1}) "
             if self.queued_humans[i].is_freezed():
                 result += "❄"
-            result += who + "\n"
+            result += who.get_name() + "\n"
         return result
 
     def add(self, full_name, from_id=0) -> bool:
