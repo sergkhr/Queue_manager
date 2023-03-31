@@ -225,7 +225,7 @@ def pop(id, qu, queue, pop_wait, have_name, no_message, buf):
             if not no_message:
                 res += f"{deleted} был(а) удален(а) из очереди\n"
             next = qu.get_first()
-            if next.get_name() != "":
+            if next != "":
                 res += f"Следующий(-ая): [id{next.get_user_id()}|{next.get_name()}]"
             send_message(id, res)
             buf[id][5] = True
