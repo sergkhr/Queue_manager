@@ -106,8 +106,7 @@ def main():
                 name = event.obj['message']['text']
                 name = name.replace("#добавить", "").strip()
                 name = name.replace("#Добавить", "").strip()
-                from_id = event.obj['message']['from_id']
-                if qu.add(name, from_id):
+                if qu.add(name):
                     if not no_message:
                         send_message(id, f"{name} внесен(а) в очередь")
                     if have_name:

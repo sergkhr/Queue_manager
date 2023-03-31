@@ -176,7 +176,8 @@ def pop_timer(buf, id):
 
 def ifix(qu, id, queue, no_message, have_name, event):
     try:
-        if qu.add(full_name(event)):
+        from_id = event.obj['message']['from_id']
+        if qu.add(full_name(event), from_id):
             if not no_message:
                 send_message(id, f"{full_name(event)} внесен(а) в очередь")
             if have_name:
