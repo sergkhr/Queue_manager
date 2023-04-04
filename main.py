@@ -245,3 +245,5 @@ if __name__ == "__main__":
         except requests.exceptions.ReadTimeout:
             print("readtimeout")
             time.sleep(600)
+        except Exception as ex:
+            print(ex)
