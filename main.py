@@ -12,7 +12,6 @@ import time
 from queue_defs import *
 
 
-
 def main():
     buf = {}
     commands = "#имя #описание #фиксирую #поп #выхожу #очередь #фиксация #анфикс #пропустить #заморозка #разморозка"
@@ -28,7 +27,7 @@ def main():
             queue = pickle.load(f)
             print("Queue loaded")
 
-    def unfix(id, queue, name):
+    def unfix(id, queue, name, kill=False):
         flag = False
         for num, i in enumerate(queue[id]):
             if name == i.get_name():
@@ -43,7 +42,7 @@ def main():
                             " удалить очередь?", keyboard=keyboard.get_keyboard())
                 state[id].append("удаление")
                 state[id].append(num)
-        if not flag:
+        if not flag and not kill:
             send_message(id, "Очередь не на сервере.")
 
     count = 0
@@ -85,7 +84,10 @@ def main():
                 name = event.obj['message']['text']
                 name = name.replace("#запуск", "").strip()
                 name = name.replace("#Запуск", "").strip()
-                multiply_create(name, id, buf, queue)
+                if name.isdigit():
+                    create(buf, id, int(name))
+                else:
+                    multiply_create(name, id, buf, queue)
             elif "#запуск" in msg and have_queue:
                 send_message(id, "Очередь уже запущена.")
             elif msg == "#запуск" and have_queue:
@@ -151,7 +153,7 @@ def main():
             elif msg == "#анфикс":
                 unfix(id, queue, qu.get_name())
             elif msg == "#резня":
-                unfix(id, queue, qu.get_name())
+                unfix(id, queue, qu.get_name(), True)
                 buf[id][0].clear()
                 buf[id][1] = False
                 buf[id][2] = False

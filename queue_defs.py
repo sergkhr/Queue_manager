@@ -124,8 +124,8 @@ def commit(state, id, buf, msg, queue):
             send_message(id, "Удаление очереди отменено.")
 
 
-def do_wait(buf, id):
-    time.sleep(120)
+def do_wait(buf, id, minutes):
+    time.sleep(minutes*60)
     buf[id][1] = True
     buf[id][4] = False
     keyboard = VkKeyboard(inline=True)
@@ -136,9 +136,9 @@ def do_wait(buf, id):
         message="Можете фиксировать.", keyboard=keyboard.get_keyboard())
 
 
-def create(buf, id):
+def create(buf, id, minutes=0):
     buf[id][4] = True
-    Thread(target=do_wait, args=(buf, id,)).start()
+    Thread(target=do_wait, args=(buf, id, minutes,)).start()
     send_message(id, "@all, Очередь запущена. Фиксировать можно через 2 минуты. Чтобы добавить себя в очередь, "
                      "напишите #фиксирую. Чтобы убрать очередь, напишите #выход. "
                      "Чтобы получить все команды очереди, введите #помощь")
