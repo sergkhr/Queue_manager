@@ -1,4 +1,4 @@
-export default class Result {
+export class Result {
     success: boolean;
     description: any;
 

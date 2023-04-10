@@ -1,8 +1,8 @@
-import Queue from "./Queue.js";
-import UserManager from "../user/UserManager.js";
+import {Queue} from "./Queue.js";
+import {UserManager} from "../user/UserManager.js";
 import fs from "fs"
 
-export default class QueueManager {
+export class QueueManager {
     queues: Queue[] = [];
 
     constructor() {

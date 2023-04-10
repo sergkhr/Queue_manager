@@ -1,4 +1,4 @@
-export default class User {
+export class User {
     name: string;
     login: string;
     _password: string;

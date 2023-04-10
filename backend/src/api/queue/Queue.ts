@@ -4,7 +4,7 @@ type Config = {
     length: number
 }
 
-export default class Queue {
+export class Queue {
     name: string;
     description: string;
     config: Config;

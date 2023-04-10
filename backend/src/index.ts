@@ -1,4 +1,4 @@
-import Application from "./api/app.js"
+import {Application} from "./api/app.js"
 import process from "node:process"
 import fs from "node:fs"
 

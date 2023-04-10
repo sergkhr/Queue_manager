@@ -2,11 +2,11 @@ import bodyParser from "body-parser";
 import Express from "express";
 import cors from "cors";
 
-import QueueManager from "./queue/QueueManager.js";
-import UserManager from "./user/UserManager.js";
-import Result from "./Result.js";
+import {QueueManager} from "./queue/QueueManager.js";
+import {UserManager} from "./user/UserManager.js";
+import {Result} from "./Result.js";
 
-export default class Application {
+export class Application {
     expressApp: Express.Application;
     queueManager: QueueManager;
     userManager: UserManager;
@@ -23,7 +23,10 @@ export default class Application {
         this.setupHandlers();
     }
 
-    start() {
+    /**
+     * Starts the application
+     */
+    start(): void {
         this.listener = this.expressApp.listen(this.config.port, this.config.host, () => {
             console.log(`App listening at port ${this.config.port}`);
         });

@@ -1,9 +1,9 @@
-import User from "./User.js"
+import {User} from "./User.js"
 import fs from "fs"
 
-import Result from "../Result.js";
+import {Result} from "../Result.js";
 
-export default class UserManager {
+export class UserManager {
     users: User[] = [];
     constructor() {
         this.load();
