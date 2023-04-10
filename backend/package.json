@@ -2,10 +2,11 @@
   "name": "queue_manager",
   "version": "1.0.0",
   "description": "- Комолов Тимур Витальевич\r - Вохрин Олег Леонидович\r - Хречко Сергей Викторович",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "npx tsc && node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm run build && node dist/index.js",
+    "build": "npx tsc",
+    "buildDocs": "npx typedoc --entryPointStrategy expand ./src"
   },
   "author": "",
   "license": "ISC",
