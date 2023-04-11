@@ -43,7 +43,6 @@ class Queue:
         self.queued_humans.append(human)
         return True
 
-
     def set_name(self, name):
         self.name = name
 
@@ -112,7 +111,7 @@ class Queue:
 
     def freeze(self, man) -> str:
         for num, i in enumerate(self.queued_humans):
-            if i == man:
+            if i.get_name() == man:
                 if self.queued_humans[num].is_freezed():
                     return "+-"
                 self.queued_humans[num].set_freeze(True)
