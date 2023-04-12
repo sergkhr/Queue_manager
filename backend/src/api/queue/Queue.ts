@@ -1,4 +1,4 @@
-type Config = {
+export type Config = {
     owner: number,
     accessType: string,
     length: number
@@ -11,7 +11,7 @@ export class Queue {
     queuedPeople: {}[];
     vkConfs: number[];
 
-    constructor(queue: Queue, vkConfs: number[] = []) {
+    constructor(queue: Queue, vkConfs: number[] = []){
         this.name = queue.name;
         this.description = queue.description || "Default description"
         this.config = {

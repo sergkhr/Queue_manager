@@ -24,7 +24,7 @@ export class Application {
     }
 
     /**
-     * Starts the application
+     * Start the application
      */
     start(): void {
         this.listener = this.expressApp.listen(this.config.port, this.config.host, () => {
@@ -32,6 +32,9 @@ export class Application {
         });
     }
 
+    /**
+     * Setup handlers for http requests
+     */
     setupHandlers() {
         let app = this.expressApp;
         let vk = this.config.vk;
@@ -58,6 +61,9 @@ export class Application {
         app.post('/users/:login', this.userLoginHandler.bind(this));
     }
 
+    /**
+     * Save users and queues
+     */
     save() {
         console.log("Saving...");
         this.queueManager.save();
