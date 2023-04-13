@@ -1,3 +1,7 @@
+#listContainer {
+  margin-left: 20px;
+  margin-right: 20px;
+}
 #listContainer .queueBlock {
   display: flex;
   flex-direction: row;
@@ -23,7 +27,8 @@
 #listContainer .queueBlock .textWrapper > p {
   font-size: 1.2em;
 }
-#listContainer .queueBlock > button {
+#listContainer .queueBlock .queueSettingsBtn {
+  text-decoration: none;
   height: 60px;
   width: fit-content;
   margin: auto 10px;
@@ -41,9 +46,9 @@
   cursor: pointer;
   padding: 20px;
 }
-#listContainer .queueBlock > button:hover {
+#listContainer .queueBlock .queueSettingsBtn:hover {
   filter: brightness(1.05);
 }
-#listContainer .queueBlock > button:active {
+#listContainer .queueBlock .queueSettingsBtn:active {
   filter: brightness(0.8);
 }

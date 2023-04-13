@@ -5,7 +5,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="../styles/forAll.css">
-        <link rel="stylesheet" href="../styles/queueListStyle.css">
+        <link rel="stylesheet" href="../styles/queueSettingsStyle.css">
     </head>
     <body>
 
@@ -22,19 +22,24 @@
 
 
         <main>
-            <div id="listContainer">
-                <div class="queueBlock">
-                    <div class="textWrapper">
-                        <h1>Queue name</h1>
-                        <b>Участников: <span class="memberCount">23</span></b>
-                        <p class="queueDesciption">Lorem Ipsum jhghgh gdgdg jhkjh gdsggd jjhg j hgdgfd idusajhf iudssahhd sjashgd</p>
-                    </div>
-                    <a href="queueSettings.html?id=1" class="queueSettingsBtn">
-                        <div>Подробнее</div>
-                    </a>
+            <div id="leftSide">
+                <h1>Участники</h1>
+                <ul class="membersList">
+                    <li>
+                        <h2>1</h2>
+                        <h3>Akakiy Akakievich</h3>
+                    </li>
+                    <li>
+                        <h2>2</h2>
+                        <h3>Peter Bezrukov</h3>
+                    </li>
+                </ul>
+            </div>
+            <div id="rightSide">
+                <h1>Настройки</h1>
+                <ul class="settingsList">
                     
-                </div>
-
+                </ul>
             </div>
         </main>
         <footer>
@@ -42,6 +47,6 @@
         </footer>
 
         <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
-        <script src="../scripts/queueListGenerator.js"></script>
+        <script src="../scripts/queueSettingsScript.js"></script>
     </body>
 </html>
