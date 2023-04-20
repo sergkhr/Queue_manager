@@ -1,10 +1,12 @@
 import bodyParser from "body-parser";
 import Express from "express";
 import cors from "cors";
+import DB from "mongodb";
 
 import {QueueManager} from "./queue/QueueManager.js";
 import {UserManager} from "./user/UserManager.js";
 import {Result} from "./Result.js";
+import { Server } from "http";
 
 export class Application {
     expressApp: Express.Application;
@@ -12,8 +14,10 @@ export class Application {
     userManager: UserManager;
     listener: any;
     config: any;
+    dbClient: DB.MongoClient;
 
-    constructor(config: any) {
+    constructor(db: DB.MongoClient, config: any) {
+        this.dbClient = db;
         this.config = config;
         this.expressApp = Express();
         this.queueManager = new QueueManager();
@@ -27,8 +31,8 @@ export class Application {
      * Start the application
      */
     start(): void {
-        this.listener = this.expressApp.listen(this.config.port, this.config.host, () => {
-            console.log(`App listening at port ${this.config.port}`);
+        this.listener = this.expressApp.listen(this.config.server.port, this.config.server.host, () => {
+            console.log(`App listening at port ${this.config.server.port}`);
         });
     }
 
