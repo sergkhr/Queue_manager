@@ -3,10 +3,12 @@ import Express from "express";
 import cors from "cors";
 import DB from "mongodb";
 
+import * as Routes from "./routes/index.js"
+
 import {QueueManager} from "./queue/QueueManager.js";
 import {UserManager} from "./user/UserManager.js";
 import {Result} from "./Result.js";
-import { Server } from "http";
+import { User } from "./user/User.js";
 
 export class Application {
     expressApp: Express.Application;
@@ -15,15 +17,21 @@ export class Application {
     listener: any;
     config: any;
     dbClient: DB.MongoClient;
+    db: DB.Db;
+    dbName: string = "queue_manager_db";
 
-    constructor(db: DB.MongoClient, config: any) {
+    constructor(db: any, config: any) {
         this.dbClient = db;
+        this.db = db.db(this.dbName);
+
         this.config = config;
         this.expressApp = Express();
         this.queueManager = new QueueManager();
         this.userManager = new UserManager();
         let app = this.expressApp;
+        
         app.use(bodyParser.json());
+        // this.setupRoutes();
         this.setupHandlers();
     }
 
@@ -36,6 +44,13 @@ export class Application {
         });
     }
 
+    // setupRoutes() {
+    //     for (const key in Routes) {
+    //         const k = key as keyof typeof Routes;
+    //         Routes[k](this.expressApp, this.db);
+    //     }
+    // }
+
     /**
      * Setup handlers for http requests
      */
@@ -47,39 +62,41 @@ export class Application {
         // let botCors = cors({
         //     origin: vk.address + ":" + vk.port
         // })
+        // Routes.asd.bind(this)();
 
         app.use(cors({
             origin: "*"
         }))
+        
         app.post('/admin', this.adminPanelHandler.bind(this));
 
         app.get('/users', this.usersGetHandler.bind(this));
         app.post('/users', this.usersPostHandler.bind(this));
 
-        app.get('/queues', this.queuesGetHandler.bind(this));
-        app.post('/queues', this.queuesPostHandler.bind(this));
+        // app.get('/queues', this.queuesGetHandler.bind(this));
+        // app.post('/queues', this.queuesPostHandler.bind(this));
 
-        app.get('/queue/:name', this.queueGetHandler.bind(this));
-        app.post('/queue/:name', this.queuePostHandler.bind(this));
+        // app.get('/queue/:name', this.queueGetHandler.bind(this));
+        // app.post('/queue/:name', this.queuePostHandler.bind(this));
 
-        app.post('/users/:login', this.userLoginHandler.bind(this));
+        // app.post('/users/:login', this.userLoginHandler.bind(this));
     }
 
     /**
      * Save users and queues
      */
-    save() {
-        console.log("Saving...");
-        this.queueManager.save();
-        this.userManager.save();
-        console.log("Saved");
-    }
+    // save() {
+    //     console.log("Saving...");
+    //     this.queueManager.save();
+    //     this.userManager.save();
+    //     console.log("Saved");
+    // }
 
     adminPanelHandler(req: Express.Request, res: Express.Response) {
         console.log("Admin command got: " + JSON.stringify(req.body));
         if (req.body.command == "turnoff") {
             res.json({text: "Turning off"});
-            this.save();
+            // this.save();
             this.listener.close();
         } else {
             res.json(new Result(false));
@@ -88,17 +105,31 @@ export class Application {
 
     usersGetHandler(req: Express.Request, res: Express.Response) {
         console.log("Users get");
-        console.log(JSON.stringify(this.userManager.getUsersList()));
-        res.json(this.userManager.getUsersList());
+        const documents = this.db.collection("Users").find().toArray().catch(err => {
+            console.log("Something went wrong during \"Users\" find");
+            console.log(err);
+            res.json(new Result(false));
+        }).then(item => {
+            res.json(item);
+        });
     }
 
     usersPostHandler(req: Express.Request, res: Express.Response) {
         console.log("Users post");
         if (req.body.command = "create") {
-            res.json(this.userManager.createUser(req.body.arguments))
-            return;
+            let user = req.body.arguments;
+            if (!user.login) {
+                res.json(new Result(false, "Login must be defined"));
+            }
+            this.db.collection("Users").insertOne(new User(user)).catch(err => {
+                console.log("Something went wrong during \"Users\" insertOne");
+                console.log(err);
+                res.json(new Result(false));
+            }).then(item => {
+                console.log(item);
+                res.json(new Result(true));
+            })
         }
-        res.json(new Result(false, "No command Entered"));
     }
 
     queuesGetHandler(req: Express.Request, res: Express.Response) {
