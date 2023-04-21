@@ -1,17 +1,25 @@
 export type Config = {
-    owner: number,
-    accessType: string,
-    length: number
+    owner?: number,
+    accessType?: string,
+    length?: number
 }
 
-export class Queue {
+export interface IQueue {
+    name: string;
+    description?: string;
+    config?: Config;
+    queuedPeople?: {}[];
+    vkConfs?: number[];
+}
+
+export class Queue implements IQueue{
     name: string;
     description: string;
     config: Config;
     queuedPeople: {}[];
     vkConfs: number[];
 
-    constructor(queue: Queue, vkConfs: number[] = []){
+    constructor(queue: Queue){
         this.name = queue.name;
         this.description = queue.description || "Default description"
         this.config = {
@@ -19,8 +27,8 @@ export class Queue {
             accessType: queue.config?.accessType || "public",
             length: queue.config?.length || Infinity,
         }
-        this.queuedPeople = [];
-        this.vkConfs = vkConfs;
+        this.queuedPeople = queue.queuedPeople || [];
+        this.vkConfs = queue.vkConfs || [];
     }
 
     getPeopleList() {

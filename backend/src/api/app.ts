@@ -26,8 +26,8 @@ export class Application {
 
         this.config = config;
         this.expressApp = Express();
-        this.queueManager = new QueueManager();
-        this.userManager = new UserManager();
+        this.queueManager = new QueueManager(this.db);
+        this.userManager = new UserManager(this.db);
         let app = this.expressApp;
         
         app.use(bodyParser.json());
@@ -70,10 +70,12 @@ export class Application {
         
         app.post('/admin', this.adminPanelHandler.bind(this));
 
-        app.get('/users', this.usersGetHandler.bind(this));
-        app.post('/users', this.usersPostHandler.bind(this));
+        app.get('/users', Routes.Users.get.bind(this));
+        app.post('/users', Routes.Users.post.bind(this));
 
-        // app.get('/queues', this.queuesGetHandler.bind(this));
+        app.get('/user/:login', Routes.User.get.bind(this));
+
+        app.get('/queues', Routes.Queues.get.bind(this));
         // app.post('/queues', this.queuesPostHandler.bind(this));
 
         // app.get('/queue/:name', this.queueGetHandler.bind(this));

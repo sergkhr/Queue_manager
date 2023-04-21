@@ -1,25 +1,53 @@
-import {User} from "./User.js"
+import {IUser, User} from "./User.js"
 import fs from "fs"
 
 import {Result} from "../Result.js";
+import Db from "mongodb";
 
 export class UserManager {
-    createUser(user: User) {
-        
-        if (this.userIsExist(user.login)) {
-            return new Result(false, "User with name '" + user.name + "' alredy exist");
-        }
-        this.users.push(new User(user));
-        return new Result(true);
-    }
-
-
-
-
+    db: Db.Db;
     users: User[] = [];
-    constructor() {
-        // this.load();
+
+    constructor(db: Db.Db) {
+        this.db = db;
+        this.db.collection("Users").find({}).toArray().catch(err => {
+            console.log("Something went wrong during \"Users\" find");
+            console.log(err);
+        }).then(items => {
+            console.log("Users loaded: " + this.users.length);
+        })
     }
+
+    async getUsers() {
+        // return await this.db.collection("Users").find({}).toArray();
+        return await this.db.collection("Users").find({}).toArray().catch(err => {
+            console.log("Something went wrong during \"Users\" find");
+            console.log(err);
+            return [];
+        }).then(item => {
+            console.log(item);
+            return item;
+        });
+    }
+
+    async createUser(user: IUser) {
+        if (this.userIsExist(user.login)) {
+            return new Result(false, "User with login '" + user.login + "' alredy exist");
+        }
+        this.db.collection("Users").insertOne(new User(user)).catch(err => {
+            console.log("Something went wrong during \"Users\" insertOne");
+            console.log(err);
+            return new Result(false);
+        }).then(item => {
+            return new Result(true);
+        });
+    }
+
+
+
+
+    
+    
     // load() {
     //     let rawUsers = JSON.parse(fs.readFileSync("data/users.json", "utf8"));
     //     for (let i in rawUsers) {
@@ -31,9 +59,7 @@ export class UserManager {
     //     fs.writeFileSync("data/users.json", JSON.stringify(this.users, null, 4));
     //     console.log("Users saved: " + this.users.length);
     // }
-    getUsersList() {
-        return this.users;
-    }
+    
     // checkPassword(login: string, password: string) {
     //     for (let i in this.users) {
     //         if (this.users[i].login == login) {
