@@ -47,7 +47,7 @@ export class Application {
     // setupRoutes() {
     //     for (const key in Routes) {
     //         const k = key as keyof typeof Routes;
-    //         Routes[k](this.expressApp, this.db);
+    //         Routes[k](this.db);
     //     }
     // }
 
@@ -84,16 +84,6 @@ export class Application {
         // app.post('/users/:login', this.userLoginHandler.bind(this));
     }
 
-    /**
-     * Save users and queues
-     */
-    // save() {
-    //     console.log("Saving...");
-    //     this.queueManager.save();
-    //     this.userManager.save();
-    //     console.log("Saved");
-    // }
-
     adminPanelHandler(req: Express.Request, res: Express.Response) {
         console.log("Admin command got: " + JSON.stringify(req.body));
         if (req.body.command == "turnoff") {
@@ -102,67 +92,6 @@ export class Application {
             this.listener.close();
         } else {
             res.json(new Result(false));
-        }
-    }
-
-    usersGetHandler(req: Express.Request, res: Express.Response) {
-        console.log("Users get");
-        const documents = this.db.collection("Users").find().toArray().catch(err => {
-            console.log("Something went wrong during \"Users\" find");
-            console.log(err);
-            res.json(new Result(false));
-        }).then(item => {
-            res.json(item);
-        });
-    }
-
-    usersPostHandler(req: Express.Request, res: Express.Response) {
-        console.log("Users post");
-        if (req.body.command = "create") {
-            let user = req.body.arguments;
-            if (!user.login) {
-                res.json(new Result(false, "Login must be defined"));
-            }
-            this.db.collection("Users").insertOne(new User(user)).catch(err => {
-                console.log("Something went wrong during \"Users\" insertOne");
-                console.log(err);
-                res.json(new Result(false));
-            }).then(item => {
-                console.log(item);
-                res.json(new Result(true));
-            })
-        }
-    }
-
-    queuesGetHandler(req: Express.Request, res: Express.Response) {
-        console.log("Queues get");
-        console.log(JSON.stringify(this.queueManager.getQueueList()));
-        res.json(this.queueManager.getQueueList({}, true));
-    }
-
-    queuesPostHandler(req: Express.Request, res: Express.Response) {
-        console.log("Queues post");
-        console.log(JSON.stringify(req.body));
-        if (req.body.command = "create") {
-            // let queue = {
-            //     name: req.body.arguments.name,
-            //     owner: {
-            //         login: req.body.arguments.owner.login,
-            //         vkId: req.body.arguments.owner.vkId
-            //     }
-            //     config: req.body.arguments.config
-            // }
-            let queue = this.queueManager.createQueue(req.body.arguments);
-            if (queue) {
-                if (req.body.arguments.vkConf) {
-                    queue.linkVkConf(req.body.arguments.vkConf);
-                }
-                res.json(new Result(true));
-            } else {
-                res.json(new Result(false));
-            }
-        } else {
-            res.json(new Result(false, "No command entered"));
         }
     }
 
