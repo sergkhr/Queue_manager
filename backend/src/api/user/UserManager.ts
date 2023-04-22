@@ -19,6 +19,10 @@ export class UserManager {
         })
     }
 
+    /**
+     * Get all users
+     * @returns array of users
+     */
     async getUsers() {
         // return await this.db.collection("Users").find({}).toArray();
         return await this.db.collection("Users").find({}).toArray().catch(err => {
@@ -30,6 +34,12 @@ export class UserManager {
             return item;
         });
     }
+
+    /**
+     * Create new user
+     * @param user Template of user
+     * @returns Creation result
+     */
 
     async createUser(user: IUser) {
         if (this.userIsExist(user.login)) {
