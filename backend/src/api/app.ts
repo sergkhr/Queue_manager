@@ -10,12 +10,23 @@ import {UserManager} from "./user/UserManager.js";
 import {Result} from "./Result.js";
 import { User } from "./user/User.js";
 
+export interface ConnectionConfig {
+    host: string;
+    port: number;
+}
+
+export interface AppConfig {
+    server: ConnectionConfig;
+    db: ConnectionConfig;
+    vk: ConnectionConfig;
+}
+
 export class Application {
     expressApp: Express.Application;
     queueManager: QueueManager;
     userManager: UserManager;
     listener: any;
-    config: any;
+    config: AppConfig;
     dbClient: DB.MongoClient;
     db: DB.Db;
     dbName: string = "queue_manager_db";
