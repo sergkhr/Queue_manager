@@ -44,8 +44,7 @@ export class Application {
         let app = this.expressApp;
         
         app.use(bodyParser.json());
-        // this.setupRoutes();
-        this.setupHandlers();
+        this.setupRoutes();
     }
 
     /**
@@ -57,17 +56,10 @@ export class Application {
         });
     }
 
-    // setupRoutes() {
-    //     for (const key in Routes) {
-    //         const k = key as keyof typeof Routes;
-    //         Routes[k](this.db);
-    //     }
-    // }
-
     /**
-     * Setup handlers for http requests
+     * Setup routes for http requests
      */
-    setupHandlers() {
+    setupRoutes() {
         let app = this.expressApp;
         let vk = this.config.vk;
 

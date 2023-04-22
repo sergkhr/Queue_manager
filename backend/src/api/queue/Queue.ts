@@ -19,7 +19,7 @@ export class Queue implements IQueue{
     queuedPeople: {}[];
     vkConfs: number[];
 
-    constructor(queue: Queue){
+    constructor(queue: IQueue){
         this.name = queue.name;
         this.description = queue.description || "Default description"
         this.config = {
