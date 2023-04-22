@@ -14,8 +14,9 @@ export function post(this: Application, req: Express.Request, res: Express.Respo
     console.log("Users post " + req.body.command);
     if (req.body.command == "create") {
         let user = req.body.arguments;
-        if (!user.login) {
-            res.json(new Result(false, "Login must be defined"));
+        if (!user.login || !user.password) {
+            res.json(new Result(false, "Login and password must be defined"));
+            return;
         }
         this.userManager.createUser(user).then(result => {
             res.json(result);

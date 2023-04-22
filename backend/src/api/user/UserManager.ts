@@ -3,6 +3,7 @@ import fs from "fs"
 
 import {Result} from "../Result.js";
 import Db from "mongodb";
+import { Login } from "../Login.js";
 
 export class UserManager {
     db: Db.Db;
@@ -43,7 +44,24 @@ export class UserManager {
         });
     }
 
+    async getUser(login: string) {
+        return await this.db.collection("Users").findOne({login: login}).catch(err => {
+            console.log("Something went wrong during \"Users\" findOne");
+            console.log(err);
+            return null;
+        }).then(user => {
+            if (!user) {
+                return null;
+            } else {
+                return user as unknown as IUser;
+            }
+        })
+    }
 
+
+    async checkPassword(login: string, password: string) {
+        
+    }
 
 
     
@@ -82,23 +100,23 @@ export class UserManager {
         return false;
     }
     
-    getUser(login: string, loginType: string = "site") {
-        if (loginType == "vk") {
-            for (let i in this.users) {
-                if (this.users[i].vk == login) {
-                    return this.users[i];
-                }
-            }
-            return null;
-        } else {
-            for (let i in this.users) {
-                if (this.users[i].login == login) {
-                    return this.users[i];
-                }
-            }
-            return null;
-        }
-    }
+    // getUser(login: string, loginType: string = "site") {
+    //     if (loginType == "vk") {
+    //         for (let i in this.users) {
+    //             if (this.users[i].vk == login) {
+    //                 return this.users[i];
+    //             }
+    //         }
+    //         return null;
+    //     } else {
+    //         for (let i in this.users) {
+    //             if (this.users[i].login == login) {
+    //                 return this.users[i];
+    //             }
+    //         }
+    //         return null;
+    //     }
+    // }
 
     
 }

@@ -1,21 +1,22 @@
+import { Login } from "../Login.js";
+
 export interface IUser {
     name?: string;
     login: string;
-    password?: string;
+    password: string;
     vk?: string;
 }
 
 export class User implements IUser{
     name?: string;
     login: string;
-    password?: string;
+    password: string;
     vk?: string;
     
     constructor(user: User) {
-        // if ()
         this.name = user?.name;
         this.login = user.login;
-        this.password = user?.password;
+        this.password = Login.encryptPassword(user.password);
         this.vk = user.vk;
     }
     // get password() {

@@ -2,6 +2,7 @@ import bodyParser from "body-parser";
 import Express from "express";
 import cors from "cors";
 import DB from "mongodb";
+import jwt from "jsonwebtoken";
 
 import * as Routes from "./routes/index.js"
 
@@ -9,6 +10,7 @@ import {QueueManager} from "./queue/QueueManager.js";
 import {UserManager} from "./user/UserManager.js";
 import {Result} from "./Result.js";
 import { User } from "./user/User.js";
+import { Login } from "./Login.js";
 
 export interface ConnectionConfig {
     host: string;
@@ -86,8 +88,25 @@ export class Application {
 
         app.get('/user/:login', Routes.User.get.bind(this));
 
+        app.post('/login', Routes.Login.post.bind(this));
+
         app.get('/queues', Routes.Queues.get.bind(this));
-        // app.post('/queues', this.queuesPostHandler.bind(this));
+        app.post('/queues', Routes.Queues.post.bind(this));
+
+        app.get('/queue/:name', Routes.Queue.get.bind(this));
+        app.post('/queue/:name', Routes.Queue.post.bind(this));
+
+        // app.get('/login', (req, res) => {
+        //     res.json(Login.generateToken("test"));
+        // });
+        // app.get('/check', (req, res) => {
+        //     console.log(req.headers.authorization)
+        //     if (req.headers.authorization) {
+        //         console.log(jwt.decode(req.headers.authorization, ));
+        //         res.json(Login.getLogin(req.headers.authorization));
+        //     }
+        // })
+        
 
         // app.get('/queue/:name', this.queueGetHandler.bind(this));
         // app.post('/queue/:name', this.queuePostHandler.bind(this));
