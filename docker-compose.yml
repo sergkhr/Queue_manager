@@ -1,0 +1,18 @@
+version: '3'
+services:
+  server:
+    build: backend/
+    ports: 
+      - 8000:8000
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=27017
+    volumes:
+      - ./backend/dist:/server/src
+      - ./backend/config.json:/server/config.json
+  db:
+    build: database/
+    volumes:
+      - ./database/data:/data/db
