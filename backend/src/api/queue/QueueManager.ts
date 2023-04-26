@@ -1,5 +1,6 @@
 import {Queue, Config, IQueue} from "./Queue.js";
 import Db from "mongodb"
+import { Result } from "../Result.js";
 
 export interface Filter {
     owner?: number;
@@ -44,7 +45,16 @@ export class QueueManager {
                 });
             }
         })
+    }
 
+    async createQueue (queue: IQueue) {
+        return await this.db.collection("Queues").insertOne(new Queue(queue)).catch(err => {
+            console.log("Something went wrong during \"Queues\" insertOne");
+            console.log(err);
+            return new Result(false);
+        }).then(item => {
+            return new Result(true);
+        });
         // for (let i in this.queues) {
         //     if (!filter.vkConf || this.queues[i].vkConfs.includes(filter.vkConf)) {
         //         if (full) {
@@ -78,14 +88,7 @@ export class QueueManager {
     //     fs.writeFileSync("data/queues.json", JSON.stringify(this.queues, null, 4));
     //     console.log("Queues saved: " + this.queues.length);
     // }
-    createQueue (queue: Queue) {
-        if (!queue.name) {
-            return false;
-        } 
-        let newQueue = new Queue(queue)
-        this.queues.push(newQueue);
-        return newQueue;
-    }
+    
     
     getQueue (name: string) {
         for (let i in this.queues) {

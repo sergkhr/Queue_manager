@@ -1,6 +1,7 @@
-import { Result } from "../Result";
-import { Application } from "../app";
+import { Result } from "../Result.js";
+import { Application } from "../app.js";
 import Express from "express"
+import { IQueue } from "../queue/Queue.js";
 
 export function get(this: Application, req: Express.Request, res: Express.Response) {
     console.log("Queues get");
@@ -12,15 +13,15 @@ export function get(this: Application, req: Express.Request, res: Express.Respon
 
 export function post(this: Application, req: Express.Request, res: Express.Response) {
     console.log("Queues post " + req.body.command);
-    // if (req.body.command == "create") {
-    //     let queue = req.body.arguments;
-    //     if (!queue.login) {
-    //         res.json(new Result(false, "Login must be defined"));
-    //     }
-    //     this.userManager.createUser(user).then(result => {
-    //         res.json(result);
-    //     });
-    // }
+    if (req.body.command == "create") {
+        let queue = req.body.arguments as IQueue;
+        if (!queue.name) {
+            res.json(new Result(false, "Name must be defined"));
+        }
+        this.queueManager.createQueue(queue).then(result => {
+            res.json(result);
+        });
+    }
 }
 
 // queuesPostHandler(req: Express.Request, res: Express.Response) {

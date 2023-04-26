@@ -3,7 +3,7 @@ import Express from "express"
 import bcrypt from "bcryptjs"
 
 export class Login {
-    private static secretKey: string = "asd";
+    private static secretKey: jwt.Secret = "asd";
 
     public static setSecretKey(secretKey: string) {
         this.secretKey = secretKey;
@@ -16,7 +16,8 @@ export class Login {
             return;
         }
         jwt.verify(token, this.secretKey, (err, decoded) => {
-            console.log(decoded);
+            console.log("Error: " + err);
+            console.log("Token: " + JSON.stringify(decoded));
             next();
         })
     }
