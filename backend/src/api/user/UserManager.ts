@@ -40,7 +40,6 @@ export class UserManager {
      * @param user Template of user
      * @returns Creation result
      */
-
     async createUser(user: IUser) {
         if (this.userIsExist(user.login)) {
             return new Result(false, "User with login '" + user.login + "' alredy exist");

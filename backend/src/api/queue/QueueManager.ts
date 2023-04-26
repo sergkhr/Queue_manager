@@ -1,6 +1,4 @@
 import {Queue, Config, IQueue} from "./Queue.js";
-import {UserManager} from "../user/UserManager.js";
-import fs from "fs"
 import Db from "mongodb"
 
 export interface Filter {

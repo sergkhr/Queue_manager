@@ -98,12 +98,6 @@ export class Application {
         //         res.json(Login.getLogin(req.headers.authorization));
         //     }
         // })
-        
-
-        // app.get('/queue/:name', this.queueGetHandler.bind(this));
-        // app.post('/queue/:name', this.queuePostHandler.bind(this));
-
-        // app.post('/users/:login', this.userLoginHandler.bind(this));
     }
 
     adminPanelHandler(req: Express.Request, res: Express.Response) {
@@ -115,42 +109,5 @@ export class Application {
         } else {
             res.json(new Result(false));
         }
-    }
-
-    queueGetHandler(req: Express.Request, res: Express.Response) {
-        console.log("Queue get");
-        console.log(JSON.stringify(req.params));
-        let queue = this.queueManager.getQueue(req.params.name);
-        if (queue) {
-            res.json(queue);
-        } else {
-            res.json(new Result(false, "Queue not found"));
-        }
-    }
-
-    queuePostHandler(req: Express.Request, res: Express.Response) {
-        console.log("Queue post");
-        console.log(JSON.stringify(req.body));
-        let queue = this.queueManager.getQueue(req.params.name);
-        console.log(queue);
-        if (!queue) {
-            res.json(new Result(false, "Queue not found"));
-            return;
-        }
-        if (req.body.command = "addPeople") {
-            let user = this.userManager.getUser(req.body.arguments.login);
-            if (queue.addPeople(req.body.arguments.login, "site")) {
-                res.json(new Result(true));
-            } else {
-                res.json(new Result(false, "Queue is full"));
-            }
-        } else {
-            res.json(new Result(false, "No command entered"));
-        }
-    }
-
-    userLoginHandler(req: Express.Request, res: Express.Response) {
-        console.log("User login");
-        console.log(JSON.stringify(req.body));
     }
 }

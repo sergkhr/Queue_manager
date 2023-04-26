@@ -9,17 +9,11 @@ export class Login {
         this.secretKey = secretKey;
     }
 
-    public static async isValidPassword(login: string, password: string) {
-
-    }
-
     public static async loginCheckMiddleware(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
         let token = req.headers["authorization"];
         if (!token) {
             res.status(401).json({message: "No token provided"});
             return;
-        } else {
-            token = token.replace("Bearer ", "");
         }
         jwt.verify(token, this.secretKey, (err, decoded) => {
             console.log(decoded);
