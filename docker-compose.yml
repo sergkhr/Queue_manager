@@ -10,7 +10,6 @@ services:
       - DB_HOST=db
       - DB_PORT=27017
     volumes:
-      - ./backend/dist:/server/src
       - ./backend/config.json:/server/config.json
   db:
     build: database/
