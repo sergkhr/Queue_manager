@@ -22,9 +22,8 @@ console.log("Starting application");
 var app = new Application(dbClient, config);
 app.start();
 
-process.on('SIGINT', () => {
-    // app.save();
-    if (app.listener) {
-        app.listener.close();
-    }
-});
+// process.on('SIGINT', () => {
+//     if (app.listener) {
+//         app.listener.close();
+//     }
+// });

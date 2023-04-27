@@ -31,4 +31,12 @@ body: {
         vkConfs?: number[];
     }
 }
+
+Config: {
+    owner?: number,
+    accessType?: string,
+    length?: number
+}
 ```
+#### /queue/:id
+- get - Возвращает очередь

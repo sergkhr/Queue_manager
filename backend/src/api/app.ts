@@ -2,15 +2,12 @@ import bodyParser from "body-parser";
 import Express from "express";
 import cors from "cors";
 import DB from "mongodb";
-import jwt from "jsonwebtoken";
 
 import * as Routes from "./routes/index.js"
 
 import {QueueManager} from "./queue/QueueManager.js";
 import {UserManager} from "./user/UserManager.js";
 import {Result} from "./Result.js";
-import { User } from "./user/User.js";
-import { Login } from "./Login.js";
 
 export interface ConnectionConfig {
     host: string;
@@ -63,12 +60,6 @@ export class Application {
         let app = this.expressApp;
         let vk = this.config.vk;
 
-        // Bot interface
-        // let botCors = cors({
-        //     origin: vk.address + ":" + vk.port
-        // })
-        // Routes.asd.bind(this)();
-
         app.use(cors({
             origin: "*"
         }))
@@ -85,26 +76,16 @@ export class Application {
         app.get('/queues', Routes.Queues.get.bind(this));
         app.post('/queues', Routes.Queues.post.bind(this));
 
-        app.get('/queue/:name', Routes.Queue.get.bind(this));
-        app.post('/queue/:name', Routes.Queue.post.bind(this));
+        app.get('/queue/:id', Routes.Queue.get.bind(this));
+        app.post('/queue/:id', Routes.Queue.post.bind(this));
 
-        // app.get('/login', (req, res) => {
-        //     res.json(Login.generateToken("test"));
-        // });
-        // app.get('/check', (req, res) => {
-        //     console.log(req.headers.authorization)
-        //     if (req.headers.authorization) {
-        //         console.log(jwt.decode(req.headers.authorization, ));
-        //         res.json(Login.getLogin(req.headers.authorization));
-        //     }
-        // })
+        
     }
 
     adminPanelHandler(req: Express.Request, res: Express.Response) {
         console.log("Admin command got: " + JSON.stringify(req.body));
         if (req.body.command == "turnoff") {
             res.json({text: "Turning off"});
-            // this.save();
             this.listener.close();
         } else {
             res.json(new Result(false));

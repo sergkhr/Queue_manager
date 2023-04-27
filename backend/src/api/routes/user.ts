@@ -10,15 +10,4 @@ export function get(this: Application, req: Express.Request, res: Express.Respon
             res.json(user);
         }
     })
-
-    // this.db.collection("Users").findOne({login: req.params.login}).catch(err => {
-    //     console.log("");
-    //     console.log(err);
-    // }).then(user => {
-    //     if (!user) {
-    //         res.json(new Result(false, "User does not exist"))
-    //     } else {
-    //         res.json(user);
-    //     }
-    // })
 }
