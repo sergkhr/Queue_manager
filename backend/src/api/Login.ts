@@ -10,16 +10,21 @@ export class Login {
     }
 
     public static async loginCheckMiddleware(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
+        console.log(req.headers)
         let token = req.headers["authorization"];
-        if (!token) {
-            res.status(401).json({message: "No token provided"});
-            return;
+        if (token) {
+            jwt.verify(token, Login.secretKey, (err, decoded) => {
+                if (err || !decoded) {
+                    res.status(401).json({message: "Invalid token: " + JSON.stringify(err)});
+                    return;
+                } else {
+                    let body = decoded as {login: string};
+                    console.log("Login: " + body.login)
+                    req.body.login = body.login;
+                }
+            })
         }
-        jwt.verify(token, this.secretKey, (err, decoded) => {
-            console.log("Error: " + err);
-            console.log("Token: " + JSON.stringify(decoded));
-            next();
-        })
+        next();
     }
 
     public static async getLogin(tocken: string) {

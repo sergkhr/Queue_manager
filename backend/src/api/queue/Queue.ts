@@ -1,6 +1,11 @@
+enum AccessType {
+    PUBLIC = "public",
+    PRIVATE = "private"
+}
+
 export type Config = {
-    owner?: number,
-    accessType?: string,
+    owner?: string,
+    accessType?: AccessType,
     length?: number
 }
 
@@ -23,8 +28,8 @@ export class Queue implements IQueue{
         this.name = queue.name;
         this.description = queue.description || "Default description"
         this.config = {
-            owner: queue.config?.owner || 0,
-            accessType: queue.config?.accessType || "public",
+            owner: queue.config?.owner || "",
+            accessType: queue.config?.accessType as AccessType || AccessType.PUBLIC,
             length: queue.config?.length || Infinity,
         }
         this.queuedPeople = queue.queuedPeople || [];

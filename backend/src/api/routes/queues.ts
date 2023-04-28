@@ -15,10 +15,27 @@ export function post(this: Application, req: Express.Request, res: Express.Respo
     console.log("Queues post " + req.body.command);
     if (req.body.command == "create") {
         let queue = req.body.arguments as IQueue;
+        queue.config = {
+            owner: req.body.login
+        }
         if (!queue.name) {
             res.json(new Result(false, "Name must be defined"));
         }
         this.queueManager.createQueue(queue).then(result => {
+            res.json(result);
+        });
+    }
+}
+
+export function del(this: Application, req: Express.Request, res: Express.Response) {
+    console.log("Entered delete route")
+    if (req.body.command == "delete") {
+        let queueId = req.body.arguments.id as string;
+        if (!queueId) {
+            res.json(new Result(false, "Id must be defined"));
+        }
+        this.queueManager.deleleQueue(queueId).then(result => {
+            console.log(result);
             res.json(result);
         });
     }

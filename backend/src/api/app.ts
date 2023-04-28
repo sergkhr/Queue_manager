@@ -8,6 +8,7 @@ import * as Routes from "./routes/index.js"
 import {QueueManager} from "./queue/QueueManager.js";
 import {UserManager} from "./user/UserManager.js";
 import {Result} from "./Result.js";
+import {Login} from "./Login.js"
 
 export interface ConnectionConfig {
     host: string;
@@ -74,10 +75,12 @@ export class Application {
         app.post('/login', Routes.Login.post.bind(this));
 
         app.get('/queues', Routes.Queues.get.bind(this));
-        app.post('/queues', Routes.Queues.post.bind(this));
+        app.post('/queues', Login.loginCheckMiddleware.bind(this), Routes.Queues.post.bind(this));
+        app.delete('/queues', Login.loginCheckMiddleware.bind(this), Routes.Queues.del.bind(this))
 
         app.get('/queue/:id', Routes.Queue.get.bind(this));
         app.post('/queue/:id', Routes.Queue.post.bind(this));
+        app.put('/queue/:id', Login.loginCheckMiddleware.bind(this), Routes.Queue.put.bind(this));
 
         
     }
