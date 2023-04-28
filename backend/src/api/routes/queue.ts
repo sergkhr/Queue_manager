@@ -5,7 +5,13 @@ import Express from "express"
 
 export function get(this: Application, req: Express.Request, res: Express.Response) {
     console.log("Queue get");
-    this.queueManager.getQueue(req.params.id).then(queue => {
+    let queueId: ObjectId;
+    try {
+        queueId = new ObjectId(req.params.id);
+    } catch (err) {
+        return;
+    }
+    this.queueManager.getQueue(queueId).then(queue => {
         if (!queue) {
             res.json(new Result(false, "Queue does not exist"));
         } else {
@@ -20,13 +26,21 @@ export function post(this: Application, req: Express.Request, res: Express.Respo
 
 export function put(this: Application, req: Express.Request, res: Express.Response) {
     console.log("Queue put");
-    let queueId = req.params.id;
     let login = req.body.login;
-    if (!queueId) {
-        res.json(new Result(false, "Id must be defined"));
+    let queueId: ObjectId;
+    try {
+        queueId = new ObjectId(req.params.id);
+    } catch (err) {
+        return;
     }
+
     if (!login) {
         res.json(new Result(false, "You must be logged in"));
+        return;
+    }
+    if (!this.queueManager.hasRights(queueId, req.body.login)) {
+        res.json(new Result(false, "You have no rights to edit this queue"));
+        return;
     }
     if (req.body.command == "join") {
         this.queueManager.joinQueue(queueId, login).then(result => {
@@ -36,6 +50,11 @@ export function put(this: Application, req: Express.Request, res: Express.Respon
         this.queueManager.leaveQueue(queueId, login).then(result => {
             res.json(result);
         });
+    } else if (req.body.command == "freeze") {
+        this.queueManager.freezeUser(queueId, login).then(result => {
+            res.json(result);
+        });
+        
     } else {
         res.json(new Result(false, "No valid command entered"));
     }

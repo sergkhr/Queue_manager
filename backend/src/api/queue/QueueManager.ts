@@ -1,4 +1,4 @@
-import {Queue, Config, IQueue} from "./Queue.js";
+import {Queue, Config, IQueue, AccessType} from "./Queue.js";
 import Db, { ObjectId } from "mongodb"
 import { Result } from "../Result.js";
 
@@ -59,8 +59,19 @@ export class QueueManager {
         });
     }
 
-    async getQueue(id: string) {
-        return await this.db.collection("Queues").findOne({_id: new ObjectId(id)}).catch(err => {
+    async hasRights(id: ObjectId, login: string) {
+        let queue = await this.getQueue(id);
+        if (!queue) {
+            return false;
+        }
+        if (queue.config.owner == login || queue.config.accessType == AccessType.PUBLIC) {
+            return true;
+        }
+        return false;
+    }
+
+    async getQueue(id: ObjectId) {
+        return await this.db.collection("Queues").findOne({_id: id}).catch(err => {
             console.log("Something went wrong during \"Queues\" findOne");
             console.log(err);
             return null;
@@ -73,9 +84,9 @@ export class QueueManager {
         })
     }
 
-    async deleleQueue(id: string) {
+    async deleleQueue(id: ObjectId) {
         console.log("Entered queue delete")
-        return await this.db.collection("Queues").deleteOne({_id: new ObjectId(id)}).catch(err => {
+        return await this.db.collection("Queues").deleteOne({_id: id}).catch(err => {
             console.log("Something went wrong during \"Queues\" deleteOne");
             console.log(err);
             return null;
@@ -84,11 +95,11 @@ export class QueueManager {
         })
     }
 
-    async joinQueue(id: string, login: string) {
+    async joinQueue(id: ObjectId, login: string) {
         if (await this.isUserInQueue(id, login)) {
             return new Result(false, "You are already in queue");
         }
-        return await this.db.collection("Queues").updateOne({_id: new ObjectId(id)}, {$push: {queuedPeople: login}}).catch(err => {
+        return await this.db.collection("Queues").updateOne({_id: id}, {$push: {queuedPeople: {login: login}}}).catch(err => {
             console.log("Something went wrong during \"Queues\" updateOne");
             console.log(err);
             return null;
@@ -97,11 +108,11 @@ export class QueueManager {
         })
     }
 
-    async leaveQueue(id: string, login: string) {
+    async leaveQueue(id: ObjectId, login: string) {
         if (!await this.isUserInQueue(id, login)) {
             return new Result(false, "You are not in queue");
         }
-        return await this.db.collection("Queues").updateOne({_id: new ObjectId(id)}, {$pull: {queuedPeople: login}}).catch(err => {
+        return await this.db.collection("Queues").updateOne({_id: id}, {$pull: {queuedPeople: {login: login}}}).catch(err => {
             console.log("Something went wrong during \"Queues\" updateOne");
             console.log(err);
             return null;
@@ -110,8 +121,8 @@ export class QueueManager {
         })
     }
 
-    async isUserInQueue(id: string, login: string) {
-        return await this.db.collection("Queues").findOne({_id: new ObjectId(id), queuedPeople: login}).catch(err => {
+    async isUserInQueue(id: ObjectId, login: string) {
+        return await this.db.collection("Queues").findOne({_id: id, queuedPeople: {login: login}}).catch(err => {
             console.log("Something went wrong during \"Queues\" findOne");
             console.log(err);
             return null;
@@ -121,6 +132,20 @@ export class QueueManager {
             } else {
                 return true;
             }
+        })
+    }
+
+    async freezeUser(id: ObjectId, login: string) {
+        if (!await this.isUserInQueue(id, login)) {
+            return new Result(false, "You are not in queue");
+        }
+        this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {login: login}}, 
+                    {$set: {"queuedPeople.$": {login: login, frozen: true}}}).catch(err => {
+            console.log("Something went wrong during \"Queues\" updateOne");
+            console.log(err);
+            return null;
+        }).then(result => {
+            return result;
         })
     }
 }
