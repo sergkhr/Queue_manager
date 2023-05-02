@@ -1,6 +1,7 @@
-enum AccessType {
+export enum AccessType {
     PUBLIC = "public",
-    PRIVATE = "private"
+    PRIVATE = "private",
+    VK_PRIVATE = "vk_private"
 }
 
 export type Config = {
@@ -12,7 +13,7 @@ export type Config = {
 export interface IQueue {
     name: string;
     description?: string;
-    config?: Config;
+    config: Config;
     queuedPeople?: {}[];
     vkConfs?: number[];
 }

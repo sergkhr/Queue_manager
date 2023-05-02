@@ -13,7 +13,7 @@ export class QueueManager {
     db: Db.Db;
     queues: Queue[] = [];
 
-    constructor(db: Db.Db) {
+    constructor(db: Db.Db){
         this.db = db;
         this.db.collection("Queues").find({}).toArray().catch(err => {
             console.log("Something went wrong during \"Queues\" find");
@@ -47,7 +47,7 @@ export class QueueManager {
         })
     }
 
-    async createQueue (queue: IQueue) {
+    async createQueue(queue: IQueue) {
         let q = new Queue(queue);
         console.log(JSON.stringify(q));
         return await this.db.collection("Queues").insertOne(q).catch(err => {

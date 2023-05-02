@@ -2,6 +2,12 @@ import jwt from "jsonwebtoken"
 import Express from "express"
 import bcrypt from "bcryptjs"
 
+/**
+ * Class for login and password encryption
+ * @class Login
+ * @static
+ * @property secretKey - Secret key for token encryption
+ */
 export class Login {
     private static secretKey: jwt.Secret = "asd";
 
@@ -27,9 +33,9 @@ export class Login {
         next();
     }
 
-    public static async getLogin(tocken: string) {
+    public static async getLogin(token: string) {
         try {
-            let decoded = jwt.verify(tocken, this.secretKey) as {login: string};
+            let decoded = jwt.verify(token, this.secretKey) as {login: string};
             return decoded?.login;
         } catch (error) {
             console.log(error);
