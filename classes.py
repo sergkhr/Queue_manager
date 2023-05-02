@@ -120,7 +120,7 @@ class Queue:
 
     def unfreeze(self, man) -> str:
         for num, i in enumerate(self.queued_humans):
-            if i == man:
+            if i.get_name() == man:
                 if not self.queued_humans[num].is_freezed():
                     return "+-"
                 self.queued_humans[num].set_freeze(False)
