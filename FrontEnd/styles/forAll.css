@@ -27,7 +27,7 @@ header {
   z-index: 1;
   display: flex;
   align-items: center;
-  box-shadow: 0px -5px 20px 0px black;
+  box-shadow: 0px -5px 20px 0px #2a2a2a;
   box-sizing: border-box;
 }
 header #logo {
@@ -41,7 +41,7 @@ header #logo > div {
   align-self: center;
   border-radius: 20px;
   background-color: var(--active-color);
-  box-shadow: 2px 2px 5px -2px #000000;
+  box-shadow: 2px 2px 5px -2px #2a2a2a;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -52,7 +52,7 @@ header #logo > div h1 {
   font-size: 2em;
   margin: 0;
   padding: 0 20px;
-  text-shadow: 2px 2px 0 #000000;
+  text-shadow: 2px 2px 0 #2a2a2a;
 }
 header #account {
   display: inline;

@@ -17,7 +17,7 @@ main #greetings h1 {
   text-align: center;
   font-size: 3em;
   color: var(--main-color);
-  text-shadow: 1px 1px 2px #000000;
+  text-shadow: 1px 1px 2px #2a2a2a;
   margin: 0;
   padding: 0;
 }
@@ -25,6 +25,7 @@ main #greetings p {
   max-width: 640px;
   width: 90%;
   font-size: large;
+  color: var(--main-color);
 }
 main #buttons {
   height: 100%;
@@ -43,7 +44,7 @@ main #buttons a {
   border: none;
   border-radius: 20px;
   background-color: var(--active-color);
-  box-shadow: 2px 2px 5px -2px #000000;
+  box-shadow: 2px 2px 5px -2px #2a2a2a;
   box-sizing: border-box;
   display: flex;
   align-items: center;

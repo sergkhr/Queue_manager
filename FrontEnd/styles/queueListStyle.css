@@ -7,7 +7,7 @@
   flex-direction: row;
   justify-content: space-between;
   background-color: var(--back-additional-color);
-  box-shadow: 0px 0px 20px -5px #000000;
+  box-shadow: 0px 0px 20px -5px #2a2a2a;
   border-radius: 20px;
   margin-top: 20px;
 }
@@ -35,7 +35,7 @@
   border: none;
   border-radius: 20px;
   background-color: var(--active-color);
-  box-shadow: 2px 2px 5px -2px #000000;
+  box-shadow: 2px 2px 5px -2px #2a2a2a;
   box-sizing: border-box;
   display: flex;
   align-items: center;
