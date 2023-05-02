@@ -1,13 +1,13 @@
-export default class Result {
+export class Result {
     success: boolean;
-    description: any;
+    message: any;
 
     constructor(success: boolean, description = "") {
         this.success = success;
         if (description != "") {
-            this.description = description;
+            this.message = description;
         } else if (!success) {
-            this.description = "Unknown error";
+            this.message = "Unknown error";
         }
     }
 }

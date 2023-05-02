@@ -1,0 +1,4 @@
+{
+    "port": "27017",
+    "dataDir": "%cd%/data"
+}

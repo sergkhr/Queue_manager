@@ -1,39 +1,84 @@
-import User from "./User.js"
+import {IUser, User} from "./User.js"
 import fs from "fs"
 
-import Result from "../Result.js";
+import {Result} from "../Result.js";
+import Db from "mongodb";
+import { Login } from "../Login.js";
 
-export default class UserManager {
+export class UserManager {
+    db: Db.Db;
     users: User[] = [];
-    constructor() {
-        this.load();
+
+    constructor(db: Db.Db) {
+        this.db = db;
+        this.db.collection("Users").find({}).toArray().catch(err => {
+            console.log("Something went wrong during \"Users\" find");
+            console.log(err);
+        }).then(items => {
+            console.log("Users loaded: " + this.users.length);
+        })
     }
-    load() {
-        let rawUsers = JSON.parse(fs.readFileSync("data/users.json", "utf8"));
-        for (let i in rawUsers) {
-            this.users.push(new User(rawUsers[i]));
+
+    /**
+     * Get all users
+     * @returns array of users
+     */
+    async getUsers() {
+        // return await this.db.collection("Users").find({}).toArray();
+        return await this.db.collection("Users").find({}).toArray().catch(err => {
+            console.log("Something went wrong during \"Users\" find");
+            console.log(err);
+            return [];
+        }).then(item => {
+            console.log(item);
+            return item;
+        });
+    }
+
+    /**
+     * Create new user
+     * @param user Template of user
+     * @returns Creation result
+     */
+    async createUser(user: IUser) {
+        if (this.userIsExist(user.login)) {
+            return new Result(false, "User with login '" + user.login + "' alredy exist");
         }
-        console.log("Users loaded: " + this.users.length);
+        this.db.collection("Users").insertOne(new User(user)).catch(err => {
+            console.log("Something went wrong during \"Users\" insertOne");
+            console.log(err);
+            return new Result(false);
+        }).then(item => {
+            return new Result(true);
+        });
     }
-    save() {
-        fs.writeFileSync("data/users.json", JSON.stringify(this.users, null, 4));
-        console.log("Users saved: " + this.users.length);
-    }
-    getUsersList() {
-        return this.users;
-    }
-    checkPassword(login: string, password: string) {
-        for (let i in this.users) {
-            if (this.users[i].login == login) {
-                if (this.users[i].checkPassword(password)) {
-                    return new Result(true);
-                } else {
-                    return new Result(false, "Wrong password");
-                }
+
+    async getUser(login: string) {
+        return await this.db.collection("Users").findOne({login: login}).catch(err => {
+            console.log("Something went wrong during \"Users\" findOne");
+            console.log(err);
+            return null;
+        }).then(user => {
+            if (!user) {
+                return null;
+            } else {
+                return user as unknown as IUser;
             }
-        }
-        return new Result(false, "User with login '" + login + "' not found");
+        })
     }
+    
+    // checkPassword(login: string, password: string) {
+    //     for (let i in this.users) {
+    //         if (this.users[i].login == login) {
+    //             if (this.users[i].checkPassword(password)) {
+    //                 return new Result(true);
+    //             } else {
+    //                 return new Result(false, "Wrong password");
+    //             }
+    //         }
+    //     }
+    //     return new Result(false, "User with login '" + login + "' not found");
+    // }
 
     userIsExist(login: string) {
         for (let i in this.users) {
@@ -42,31 +87,5 @@ export default class UserManager {
             }
         }
         return false;
-    }
-    
-    getUser(login: string, loginType: string = "site") {
-        if (loginType == "vk") {
-            for (let i in this.users) {
-                if (this.users[i].vk == login) {
-                    return this.users[i];
-                }
-            }
-            return null;
-        } else {
-            for (let i in this.users) {
-                if (this.users[i].login == login) {
-                    return this.users[i];
-                }
-            }
-            return null;
-        }
-    }
-
-    createUser(user: User) {
-        if (this.userIsExist(user.login)) {
-            return new Result(false, "User with name '" + user.name + "' alredy exist");
-        }
-        this.users.push(new User(user));
-        return new Result(true);
     }
 }
