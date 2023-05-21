@@ -64,6 +64,8 @@ export class Application {
         app.use(cors({
             origin: "*"
         }))
+
+        app.get('/', Routes.statusGet);
         
         app.post('/admin', this.adminPanelHandler.bind(this));
 
