@@ -1,9 +1,10 @@
 #### /users
 - get - Возвращает список пользователей
-- post - Создание пользователя, 
+- post - Создание пользователя, возвращает Result
 ```TypeScript
 body: {
-    araguments: {
+    command: "create",
+    arguments: {
         login: string, password: string
     }
 }
@@ -14,9 +15,7 @@ body: {
 - post - Авторизация, возвращает JWT токен, 
 ```TypeScript
 body: {
-    araguments: {
-        login: string, password: string
-    }
+    login: string, password: string
 }
 ```
 #### /queues
@@ -24,7 +23,7 @@ body: {
 - post - Создание очереди, 
 ```TypeScript
 body: {
-    araguments: {
+    arguments: {
         name: string;
         description?: string;
         config?: Config;

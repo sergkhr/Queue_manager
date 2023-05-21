@@ -27,10 +27,12 @@ export function post(this: Application, req: Express.Request, res: Express.Respo
 export function put(this: Application, req: Express.Request, res: Express.Response) {
     console.log("Queue put");
     let login = req.body.login;
+    console.log("Queue put: " + req.params.id)
     let queueId: ObjectId;
     try {
         queueId = new ObjectId(req.params.id);
-    } catch (err) {
+    } catch (err: any) {
+        res.json(new Result(false, err));
         return;
     }
 

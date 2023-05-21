@@ -102,9 +102,9 @@ export class QueueManager {
         return await this.db.collection("Queues").updateOne({_id: id}, {$push: {queuedPeople: {login: login}}}).catch(err => {
             console.log("Something went wrong during \"Queues\" updateOne");
             console.log(err);
-            return null;
+            return new Result(false, "Something went wrong during \"Queues\" updateOne");
         }).then(result => {
-            return result;
+            return new Result(true);
         })
     }
 

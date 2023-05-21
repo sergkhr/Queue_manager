@@ -2,6 +2,7 @@ import { Result } from "../Result.js";
 import { Application } from "../app.js";
 import Express from "express"
 import { IQueue } from "../queue/Queue.js";
+import { ObjectId } from "mongodb";
 
 export function get(this: Application, req: Express.Request, res: Express.Response) {
     console.log("Queues get");
@@ -34,7 +35,7 @@ export function del(this: Application, req: Express.Request, res: Express.Respon
         if (!queueId) {
             res.json(new Result(false, "Id must be defined"));
         }
-        this.queueManager.deleleQueue(queueId).then(result => {
+        this.queueManager.deleleQueue(new ObjectId(queueId)).then(result => {
             console.log(result);
             res.json(result);
         });
