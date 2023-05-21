@@ -1,7 +1,7 @@
 export enum AccessType {
-    PUBLIC = "public",
-    PRIVATE = "private",
-    VK_PRIVATE = "vk_private"
+    PUBLIC = "PUBLIC",
+    PRIVATE = "PRIVATE",
+    VK_PRIVATE = "VK_PRIVATE"
 }
 
 export type Config = {
