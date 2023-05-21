@@ -92,8 +92,21 @@ export class Application {
         if (req.body.command == "turnoff") {
             res.json({text: "Turning off"});
             this.listener.close();
-        } else {
-            res.json(new Result(false));
+            process.exit(0);
         }
+        if (req.body.command == "dropUsers") {
+            console.log("Deleting " + req.body.user);
+            if (!req.body.user) {
+                res.json(new Result(false, "Define login!"))
+                return;
+            }
+            this.userManager.deleteUser(req.body.user).catch(err => {
+                res.json(new Result(false, err));
+            }).then(item => {
+                res.json(new Result(true));
+            })
+            return;
+        }
+        res.json(new Result(false));
     }
 }

@@ -11,10 +11,10 @@ export function get(this: Application, req: Express.Request, res: Express.Respon
 }
 
 export function post(this: Application, req: Express.Request, res: Express.Response) {
-    console.log("Users post " + req.body.command);
+    console.log("Users post body: " + JSON.stringify(req.body));
     if (req.body.command == "create") {
         let user = req.body.arguments;
-        if (!user.login || !user.password) {
+        if (!user.login || !user.password || !user.username) {
             res.json(new Result(false, "Login and password must be defined"));
             return;
         }
