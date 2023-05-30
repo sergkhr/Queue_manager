@@ -14,15 +14,20 @@ export interface IQueue {
     name: string;
     description?: string;
     config: Config;
-    queuedPeople?: {}[];
+    queuedPeople: UserState[];
     vkConfs?: number[];
+}
+
+export interface UserState {
+    login: string;
+    frozen?: boolean;
 }
 
 export class Queue implements IQueue{
     name: string;
     description: string;
     config: Config;
-    queuedPeople: {}[];
+    queuedPeople: UserState[];
     vkConfs: number[];
 
     constructor(queue: IQueue){
@@ -44,8 +49,7 @@ export class Queue implements IQueue{
     addPeople(login: string, loginType: string) {
         if (!this.config.length || this.queuedPeople.length < this.config.length) {
             this.queuedPeople.push({
-                login: login,
-                loginType: loginType
+                login: login
             });
             return true;
         }

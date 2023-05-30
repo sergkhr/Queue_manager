@@ -12,6 +12,14 @@ config.db.port = Number(process.env.DB_PORT) || config.db.port;
 console.log("Final config:")
 console.log(JSON.stringify(config));
 
+process.on('SIGINT', () => {
+    console.info("Interrupted");
+    if (app.listener) {
+        app.listener.close();
+    }
+    process.exit(0);
+});
+
 console.log("Connecting to db...");
 const dbClient: MongoClient = await (MongoClient.connect("mongodb://" + config.db.host + ":" + config.db.port).catch(err => {
     console.log(err);
@@ -21,9 +29,3 @@ const dbClient: MongoClient = await (MongoClient.connect("mongodb://" + config.d
 console.log("Starting application");
 var app = new Application(dbClient, config);
 app.start();
-
-// process.on('SIGINT', () => {
-//     if (app.listener) {
-//         app.listener.close();
-//     }
-// });

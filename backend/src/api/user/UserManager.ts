@@ -15,7 +15,7 @@ export class UserManager {
             console.log("Something went wrong during \"Users\" find");
             console.log(err);
         }).then(items => {
-            console.log("Users loaded: " + this.users.length);
+            console.log("Users in db: " + (items ? items.length : 0));
         })
     }
 
@@ -48,7 +48,7 @@ export class UserManager {
         let existedUser = await this.getUser(user.login);
 
         if (existedUser != null) {
-            console.log("asdasdasdasdasds");
+            // console.log("asdasdasdasdasds");
             return new Result(false, `User with login ${user.login} already exist`);
         }
 

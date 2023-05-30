@@ -29,7 +29,7 @@ export function post(this: Application, req: Express.Request, res: Express.Respo
 }
 
 export function del(this: Application, req: Express.Request, res: Express.Response) {
-    console.log("Entered delete route")
+    console.log("Queues del " + req.body.command + " " + req.body.arguments.id);
     if (req.body.command == "delete") {
         let queueId = req.body.arguments.id as string;
         if (!queueId) {
