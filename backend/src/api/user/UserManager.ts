@@ -15,7 +15,7 @@ export class UserManager {
             console.log("Something went wrong during \"Users\" find");
             console.log(err);
         }).then(items => {
-            console.log("Users loaded: " + this.users.length);
+            console.log("Users in db: " + (items ? items.length : 0));
         })
     }
 
@@ -30,8 +30,9 @@ export class UserManager {
             console.log(err);
             return [];
         }).then(item => {
-            console.log(item);
-            return item;
+            let items = item.map(i => i as unknown as IUser)
+            console.log(items);
+            return items;
         });
     }
 
@@ -44,13 +45,21 @@ export class UserManager {
         if (this.userIsExist(user.login)) {
             return new Result(false, "User with login '" + user.login + "' alredy exist");
         }
-        this.db.collection("Users").insertOne(new User(user)).catch(err => {
+        let existedUser = await this.getUser(user.login);
+
+        if (existedUser != null) {
+            // console.log("asdasdasdasdasds");
+            return new Result(false, `User with login ${user.login} already exist`);
+        }
+
+        return await this.db.collection("Users").insertOne(new User(user)).catch(err => {
             console.log("Something went wrong during \"Users\" insertOne");
             console.log(err);
             return new Result(false);
         }).then(item => {
             return new Result(true);
         });
+        
     }
 
     async getUser(login: string) {
@@ -64,6 +73,16 @@ export class UserManager {
             } else {
                 return user as unknown as IUser;
             }
+        })
+    }
+
+    async deleteUser(login: string) {
+        return await this.db.collection("Users").deleteOne({login: login}).catch(err => {
+            console.log("Something went wrong during \"Users\" deleteOne");
+            console.log(err);
+            return new Result(false);
+        }).then(result => {
+            return new Result(true);
         })
     }
     

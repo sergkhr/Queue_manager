@@ -8,6 +8,8 @@ export class Result {
             this.message = description;
         } else if (!success) {
             this.message = "Unknown error";
+        } else {
+            this.message = ""
         }
     }
 }

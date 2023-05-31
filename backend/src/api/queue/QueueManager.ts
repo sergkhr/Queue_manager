@@ -1,6 +1,7 @@
-import {Queue, Config, IQueue, AccessType} from "./Queue.js";
+import { Queue, Config, IQueue, AccessType, UserState } from "./Queue.js";
 import Db, { ObjectId } from "mongodb"
 import { Result } from "../Result.js";
+import { IUser} from "../user/User.js"
 
 export interface Filter {
     owner?: number;
@@ -19,7 +20,7 @@ export class QueueManager {
             console.log("Something went wrong during \"Queues\" find");
             console.log(err);
         }).then(items => {
-            console.log("Queues loaded: " + this.queues.length);
+            console.log("Queues loaded: " + (items ? items.length : 0));
         })
     }
 
@@ -102,9 +103,9 @@ export class QueueManager {
         return await this.db.collection("Queues").updateOne({_id: id}, {$push: {queuedPeople: {login: login}}}).catch(err => {
             console.log("Something went wrong during \"Queues\" updateOne");
             console.log(err);
-            return null;
+            return new Result(false, "Something went wrong during \"Queues\" updateOne");
         }).then(result => {
-            return result;
+            return new Result(true);
         })
     }
 
@@ -121,12 +122,13 @@ export class QueueManager {
         })
     }
 
-    async isUserInQueue(id: ObjectId, login: string) {
-        return await this.db.collection("Queues").findOne({_id: id, queuedPeople: {login: login}}).catch(err => {
+    async isUserInQueue(queueId: ObjectId, login: string) {
+        return await this.db.collection("Queues").findOne({_id: queueId, queuedPeople: {$elemMatch: {login: login}}}).catch(err => {
             console.log("Something went wrong during \"Queues\" findOne");
             console.log(err);
             return null;
         }).then(queue => {
+            // console.log(JSON.stringify(queue));
             if (!queue) {
                 return false;
             } else {
@@ -139,13 +141,46 @@ export class QueueManager {
         if (!await this.isUserInQueue(id, login)) {
             return new Result(false, "You are not in queue");
         }
-        this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {login: login}}, 
-                    {$set: {"queuedPeople.$": {login: login, frozen: true}}}).catch(err => {
+        let queue = await this.db.collection("Queues").findOne({_id: id, queuedPeople: {$elemMatch: {login: login}}}) as unknown as IQueue;
+
+
+        let newUser: UserState = {
+            login: login
+        };
+        for(let i in queue.queuedPeople) {
+            if (queue.queuedPeople[i].login == login) {
+                if (!queue.queuedPeople[i].frozen) {
+                    newUser.frozen = true
+                }
+            }
+        }
+            return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}}, 
+                        {$set: {"queuedPeople.$": newUser}}).catch(err => {
             console.log("Something went wrong during \"Queues\" updateOne");
             console.log(err);
             return null;
         }).then(result => {
             return result;
+        })
+    }
+
+    async popQueue (id: ObjectId) {
+        let queue = await this.getQueue(id);
+        if (!queue) {
+            return new Result(false, "Queue not found");
+        }
+        let people = queue.queuedPeople;
+        let i = people.findIndex(item => {
+            return !item.frozen;
+        })
+        if (i >= 0) {
+            people.splice(i, 1)
+        }
+        return await this.db.collection("Queues").updateOne({_id: id}, {$set: {queuedPeople: people}}).catch(err => {
+            console.log(err);
+            return new Result(false, err);
+        }).then(item => {
+            return item;
         })
     }
 }

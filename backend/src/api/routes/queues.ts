@@ -2,6 +2,7 @@ import { Result } from "../Result.js";
 import { Application } from "../app.js";
 import Express from "express"
 import { IQueue } from "../queue/Queue.js";
+import { ObjectId } from "mongodb";
 
 export function get(this: Application, req: Express.Request, res: Express.Response) {
     console.log("Queues get");
@@ -28,13 +29,13 @@ export function post(this: Application, req: Express.Request, res: Express.Respo
 }
 
 export function del(this: Application, req: Express.Request, res: Express.Response) {
-    console.log("Entered delete route")
+    console.log("Queues del " + req.body.command + " " + req.body.arguments.id);
     if (req.body.command == "delete") {
         let queueId = req.body.arguments.id as string;
         if (!queueId) {
             res.json(new Result(false, "Id must be defined"));
         }
-        this.queueManager.deleleQueue(queueId).then(result => {
+        this.queueManager.deleleQueue(new ObjectId(queueId)).then(result => {
             console.log(result);
             res.json(result);
         });

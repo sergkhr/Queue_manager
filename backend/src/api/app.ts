@@ -9,6 +9,7 @@ import {QueueManager} from "./queue/QueueManager.js";
 import {UserManager} from "./user/UserManager.js";
 import {Result} from "./Result.js";
 import {Login} from "./Login.js"
+import { IUser } from "./user/User.js";
 
 export interface ConnectionConfig {
     host: string;
@@ -64,6 +65,8 @@ export class Application {
         app.use(cors({
             origin: "*"
         }))
+
+        app.get('/', Routes.statusGet);
         
         app.post('/admin', this.adminPanelHandler.bind(this));
 
@@ -90,8 +93,21 @@ export class Application {
         if (req.body.command == "turnoff") {
             res.json({text: "Turning off"});
             this.listener.close();
-        } else {
-            res.json(new Result(false));
+            process.exit(0);
         }
+        if (req.body.command == "dropUsers") {
+            console.log("Deleting " + req.body.user);
+            if (!req.body.user) {
+                res.json(new Result(false, "Define login!"))
+                return;
+            }
+            this.userManager.deleteUser(req.body.user).catch(err => {
+                res.json(new Result(false, err));
+            }).then(item => {
+                res.json(new Result(true));
+            })
+            return;
+        }
+        res.json(new Result(false));
     }
 }

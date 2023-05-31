@@ -25,12 +25,13 @@ export function post(this: Application, req: Express.Request, res: Express.Respo
 }
 
 export function put(this: Application, req: Express.Request, res: Express.Response) {
-    console.log("Queue put");
     let login = req.body.login;
+    console.log("Queue put: " + req.params.id + " " + req.body.command)
     let queueId: ObjectId;
     try {
         queueId = new ObjectId(req.params.id);
-    } catch (err) {
+    } catch (err: any) {
+        res.json(new Result(false, err));
         return;
     }
 
@@ -42,20 +43,34 @@ export function put(this: Application, req: Express.Request, res: Express.Respon
         res.json(new Result(false, "You have no rights to edit this queue"));
         return;
     }
-    if (req.body.command == "join") {
-        this.queueManager.joinQueue(queueId, login).then(result => {
-            res.json(result);
-        });
-    } else if (req.body.command == "leave") {
-        this.queueManager.leaveQueue(queueId, login).then(result => {
-            res.json(result);
-        });
-    } else if (req.body.command == "freeze") {
-        this.queueManager.freezeUser(queueId, login).then(result => {
-            res.json(result);
-        });
-        
-    } else {
-        res.json(new Result(false, "No valid command entered"));
+    switch (req.body.command) {
+        case "join": {
+            this.queueManager.joinQueue(queueId, login).then(result => {
+                res.json(result);
+            });
+            break;
+        }
+        case "leave": {
+            this.queueManager.leaveQueue(queueId, login).then(result => {
+                res.json(result);
+            });
+            break;
+        }
+        case "freeze": {
+            this.queueManager.freezeUser(queueId, login).then(result => {
+                res.json(result);
+            });
+            break;
+        }
+        case "pop": {
+            this.queueManager.popQueue(queueId).then(result => {
+                res.json(result);
+            })
+            break;
+        }
+        default: {
+            res.json(new Result(false, "No valid command entered"));
+            break;
+        }
     }
 }
