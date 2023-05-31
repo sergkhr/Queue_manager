@@ -67,6 +67,7 @@ export class Application {
         }))
 
         app.get('/', Routes.statusGet);
+        app.get("/sse", Routes.sse);
         
         app.post('/admin', this.adminPanelHandler.bind(this));
 
@@ -84,6 +85,7 @@ export class Application {
         app.get('/queue/:id', Routes.Queue.get.bind(this));
         app.post('/queue/:id', Routes.Queue.post.bind(this));
         app.put('/queue/:id', Login.loginCheckMiddleware.bind(this), Routes.Queue.put.bind(this));
+        app.get('/queue/:id/subscribe', Routes.Queue.subscribe.bind(this));
 
         
     }

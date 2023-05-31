@@ -1,2 +1,5 @@
 security:
     authorization: disabled
+
+# replication:
+#     replSetName: rs0

@@ -1,7 +1,7 @@
 import { Queue, Config, IQueue, AccessType, UserState } from "./Queue.js";
 import Db, { ObjectId } from "mongodb"
 import { Result } from "../Result.js";
-import { IUser} from "../user/User.js"
+import Express from "express";
 
 export interface Filter {
     owner?: number;
@@ -10,9 +10,16 @@ export interface Filter {
     vkConf?: number;
 }
 
+interface Subscribe {
+    id: number,
+    queueId: ObjectId,
+    res: Express.Response
+};
+
 export class QueueManager {
     db: Db.Db;
     queues: Queue[] = [];
+    subscribers: Subscribe[] =[];
 
     constructor(db: Db.Db){
         this.db = db;
@@ -21,6 +28,11 @@ export class QueueManager {
             console.log(err);
         }).then(items => {
             console.log("Queues loaded: " + (items ? items.length : 0));
+        })
+
+        this.db.collection("Queues").watch().on('change', change => {
+            console.log("Queues was changed");
+            this.onQueuesChanged(change);
         })
     }
 
@@ -143,10 +155,10 @@ export class QueueManager {
         }
         let queue = await this.db.collection("Queues").findOne({_id: id, queuedPeople: {$elemMatch: {login: login}}}) as unknown as IQueue;
 
-
         let newUser: UserState = {
             login: login
         };
+
         for(let i in queue.queuedPeople) {
             if (queue.queuedPeople[i].login == login) {
                 if (!queue.queuedPeople[i].frozen) {
@@ -181,6 +193,47 @@ export class QueueManager {
             return new Result(false, err);
         }).then(item => {
             return item;
+        })
+    }
+
+    async onQueuesChanged(change: any) {
+        for (let sub of this.subscribers) {
+            if (change.documentKey._id.toString() == sub.queueId.toString()) {
+                console.log(`Sending event ${change.operationType}`);
+                if (change.operationType == "update") {
+                    sub.res.write("data: " + JSON.stringify({
+                        op: "update",
+                        update: change.updateDescription.updatedFields
+                    }) + "\n\n")
+                } else if (change.operationType == "delete") {
+                    sub.res.write("data: " + JSON.stringify({
+                        op: "delete"
+                    }) + "\n\n")
+                }
+            }
+        }
+    }
+
+    async subscribe(queueId: ObjectId, req: Express.Request, res: Express.Response){
+        return await this.getQueue(queueId).catch(err => {
+            console.log("Something went wrong during subscribe");
+            return new Result(false);
+        }).then(item => {
+            if (item == null) {
+                return new Result(false);
+            } 
+            let subID = Date.now();
+            this.subscribers.push({
+                id: subID,
+                queueId: queueId,
+                res: res
+            })
+            req.on('close', () => {
+                console.log("Connection closed");
+                let i = this.subscribers.length;
+                this.subscribers = this.subscribers.filter(sub => sub.id !== subID)
+                console.log(`Deleted ${this.subscribers.length - i} subscribes`);
+            });
         })
     }
 }

@@ -21,7 +21,9 @@ process.on('SIGINT', () => {
 });
 
 console.log("Connecting to db...");
-const dbClient: MongoClient = await (MongoClient.connect("mongodb://" + config.db.host + ":" + config.db.port).catch(err => {
+const URL = "mongodb://" + config.db.host + ":" + config.db.port + "/?replicaSet=rs0&directConnection=true";
+console.log(URL);
+const dbClient: MongoClient = await (MongoClient.connect(URL).catch(err => {
     console.log(err);
     process.abort();
 }));
