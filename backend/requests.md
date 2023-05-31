@@ -40,7 +40,7 @@ body: {
 
 Config: {
     owner?: number,
-    accessType?: string,
+    accessType?: string,    //("public"/"private")
     length?: number
 }
 ```
