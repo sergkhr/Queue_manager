@@ -8,6 +8,7 @@ let config = JSON.parse(fs.readFileSync("config.json", "utf8")) as AppConfig;
 console.log("Reading enviroment variables...");
 config.db.host = process.env.DB_HOST || config.db.host;
 config.db.port = Number(process.env.DB_PORT) || config.db.port;
+config.db.rs = process.env.DB_RS || "qm_rs";
 
 console.log("Final config:")
 console.log(JSON.stringify(config));
@@ -21,7 +22,7 @@ process.on('SIGINT', () => {
 });
 
 console.log("Connecting to db...");
-const URL = "mongodb://" + config.db.host + ":" + config.db.port + "/?replicaSet=rs0&directConnection=true";
+const URL = "mongodb://" + config.db.host + ":" + config.db.port + `/?replicaSet=${config.db.rs}&directConnection=true`;
 console.log(URL);
 const dbClient: MongoClient = await (MongoClient.connect(URL).catch(err => {
     console.log(err);

@@ -30,6 +30,7 @@ export class Queue implements IQueue{
     queuedPeople: UserState[];
     vkConfs: number[];
 
+
     constructor(queue: IQueue){
         this.name = queue.name;
         this.description = queue.description || "Default description"
@@ -60,3 +61,11 @@ export class Queue implements IQueue{
         this.vkConfs.push(id);
     }
 }
+
+// export interface IQueue {
+//     name: string;
+//     description?: string;
+//     config: Config;
+//     queuedPeople: UserState[];
+//     vkConfs?: number[];
+// }

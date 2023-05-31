@@ -5,10 +5,10 @@ import DB from "mongodb";
 
 import * as Routes from "./routes/index.js"
 
-import {QueueManager} from "./queue/QueueManager.js";
-import {UserManager} from "./user/UserManager.js";
-import {Result} from "./Result.js";
-import {Login} from "./Login.js"
+import { QueueManager } from "./queue/QueueManager.js";
+import { UserManager } from "./user/UserManager.js";
+import { Result } from "./Result.js";
+import { Login } from "./Login.js"
 import { IUser } from "./user/User.js";
 
 export interface ConnectionConfig {
@@ -16,21 +16,28 @@ export interface ConnectionConfig {
     port: number;
 }
 
+export interface DBConfig {
+    host: string;
+    port: number;
+    rs: string;
+}
+
 export interface AppConfig {
     server: ConnectionConfig;
-    db: ConnectionConfig;
+    db: DBConfig;
     vk: ConnectionConfig;
 }
 
 export class Application {
+    listener: any;
+    dbClient: DB.MongoClient;
+    dbName: string = "queue_manager_db";
+
     expressApp: Express.Application;
     queueManager: QueueManager;
     userManager: UserManager;
-    listener: any;
-    config: AppConfig;
-    dbClient: DB.MongoClient;
     db: DB.Db;
-    dbName: string = "queue_manager_db";
+    config: AppConfig;
 
     constructor(db: any, config: any) {
         this.dbClient = db;
@@ -41,7 +48,7 @@ export class Application {
         this.queueManager = new QueueManager(this.db);
         this.userManager = new UserManager(this.db);
         let app = this.expressApp;
-        
+
         app.use(bodyParser.json());
         this.setupRoutes();
     }
@@ -86,8 +93,6 @@ export class Application {
         app.post('/queue/:id', Routes.Queue.post.bind(this));
         app.put('/queue/:id', Login.loginCheckMiddleware.bind(this), Routes.Queue.put.bind(this));
         app.get('/queue/:id/subscribe', Routes.Queue.subscribe.bind(this));
-
-        
     }
 
     adminPanelHandler(req: Express.Request, res: Express.Response) {
