@@ -10,4 +10,4 @@ with open("config.json") as file:
     if "dataDir" in config:
         dataDir = config["dataDir"]
 
-os.system(f"docker run --rm -d -p{port}:27017 -v {dataDir}:/data/db mongo")
+os.system(f"docker run -d --rm --name mongo1 -p{port}:27017 --network my-mongo -v {dataDir}:/data/db mymongo mongod --replSet rs0 --bind_ip localhost,mongo1")

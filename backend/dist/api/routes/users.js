@@ -1,16 +1,12 @@
-import { Application } from "../app";
-import Express from "express";
 import { Result } from "../Result.js";
-
-export function get(this: Application, req: Express.Request, res: Express.Response) {
+export function get(req, res) {
     console.log("Users get");
-    this.userManager.getUsers().then(users =>{
+    this.userManager.getUsers().then(users => {
         // console.log(users);
         res.json(users);
     });
 }
-
-export function post(this: Application, req: Express.Request, res: Express.Response) {
+export function post(req, res) {
     console.log("Users post body: " + JSON.stringify(req.body));
     if (req.body.command == "create") {
         let user = req.body.arguments;

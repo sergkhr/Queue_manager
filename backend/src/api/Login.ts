@@ -27,8 +27,11 @@ export class Login {
                     let body = decoded as {login: string};
                     console.log("Login: " + body.login)
                     req.body.login = body.login;
+                    req.body.logged = true;
                 }
             })
+        } else {
+            req.body.logged = false;
         }
         next();
     }
