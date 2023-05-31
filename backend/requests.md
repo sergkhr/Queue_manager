@@ -40,7 +40,7 @@ body: {
 
 Config: {
     owner?: number,
-    accessType?: string,    //("public"/"private")
+    accessType?: "public" | "private"
     length?: number
 }
 ```
@@ -62,3 +62,13 @@ body: {
 }
 ```
 Также либо значение хедера "authorization" должно содержать jwt токен, либо в body должно быть поле login, если человек хочет войти/выйти/заморозится незалогинившись. Для попа можео без ничего
+
+#### /queue/:id/subscribe
+- get - Возвращает EventSource, чтобы подписаться на обновление очереди. 
+Как с этим работать: https://learn.javascript.ru/server-sent-events?ysclid=libvtzr9w3251964410
+```TypeScript
+event: {
+    op: "update" | "delete", // Обновление или удаление очереди
+    update: // Если обновление, то тут будет находится описание того, что изменилось
+}
+```
