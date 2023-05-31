@@ -25,7 +25,8 @@ export function post(this: Application, req: Express.Request, res: Express.Respo
 }
 
 export function put(this: Application, req: Express.Request, res: Express.Response) {
-    let login = req.body.login;
+    let logged = req.body.logged;
+    let login = (logged ? "" : "ul:") + req.body.login;
     console.log("Queue put: " + req.params.id + " " + req.body.command)
     let queueId: ObjectId;
     try {
@@ -36,9 +37,10 @@ export function put(this: Application, req: Express.Request, res: Express.Respon
     }
 
     if (!login) {
-        res.json(new Result(false, "You must be logged in"));
+        res.json(new Result(false, "You must be logged in or enter login to join"));
         return;
     }
+
     if (!this.queueManager.hasRights(queueId, req.body.login)) {
         res.json(new Result(false, "You have no rights to edit this queue"));
         return;
