@@ -1,4 +1,4 @@
-main{
+.blocks{
     display: flex;
     justify-content: space-evenly; 
     height: fit-content;
@@ -26,5 +26,19 @@ main{
                 }
             }
         }
+    }
+}
+main{
+    &>div{
+        margin-bottom: 30px;
+    }
+    .controlButtons{
+        display: flex;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+    }
+    .navButtons{
+        display: flex;
+        justify-content: space-evenly;
     }
 }
