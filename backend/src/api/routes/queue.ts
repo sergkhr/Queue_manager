@@ -36,7 +36,7 @@ export function put(this: Application, req: Express.Request, res: Express.Respon
         return;
     }
 
-    if (!login) {
+    if (!login && req.body.command != "pop") {
         res.json(new Result(false, "You must be logged in or enter login to join"));
         return;
     }

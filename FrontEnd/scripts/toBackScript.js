@@ -49,3 +49,22 @@ function enterQueueNoLogin(id, name){
         });
     });
 }
+
+function popFirstOne(id){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: ip + "/queue/" + id,
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({
+                command: "pop"
+            }),
+            success: function(data){
+                resolve(data);
+            },
+            error: function(err){
+                reject(err);
+            }
+        });
+    });
+}
