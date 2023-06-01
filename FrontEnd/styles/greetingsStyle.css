@@ -35,29 +35,3 @@ main #buttons {
   align-items: center;
   justify-content: center;
 }
-main #buttons a {
-  text-decoration: none;
-  color: initial;
-  height: 60px;
-  width: fit-content;
-  margin: 10px;
-  border: none;
-  border-radius: 20px;
-  background-color: var(--active-color);
-  box-shadow: 2px 2px 5px -2px #2a2a2a;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5em;
-  color: white;
-  text-shadow: 2px 2px 0 #380036;
-  cursor: pointer;
-  padding: 20px;
-}
-main #buttons a:hover {
-  filter: brightness(1.05);
-}
-main #buttons a:active {
-  filter: brightness(0.8);
-}
