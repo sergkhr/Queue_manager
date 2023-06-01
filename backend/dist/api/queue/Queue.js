@@ -4,6 +4,12 @@ export var AccessType;
     AccessType["PRIVATE"] = "PRIVATE";
     AccessType["VK_PRIVATE"] = "VK_PRIVATE";
 })(AccessType || (AccessType = {}));
+export var PeopleType;
+(function (PeopleType) {
+    PeopleType["SITE"] = "SITE";
+    PeopleType["NOT_LOGGED"] = "NOT_LOGGED";
+    PeopleType["VK"] = "VK";
+})(PeopleType || (PeopleType = {}));
 export class Queue {
     constructor(queue) {
         var _a, _b, _c;
@@ -20,10 +26,12 @@ export class Queue {
     getPeopleList() {
         return Array.from(this.queuedPeople);
     }
-    addPeople(login, loginType) {
+    addPeople(login, loginType, type) {
         if (!this.config.length || this.queuedPeople.length < this.config.length) {
             this.queuedPeople.push({
-                login: login
+                type: type,
+                login: login,
+                frozen: false
             });
             return true;
         }
