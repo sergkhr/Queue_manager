@@ -22,24 +22,29 @@
 
 
         <main>
-            <div id="leftSide">
-                <h1>Участники</h1>
-                <ul class="membersList">
-                    <li>
-                        <h2>1</h2>
-                        <h3>Akakiy Akakievich</h3>
-                    </li>
-                    <li>
-                        <h2>2</h2>
-                        <h3>Peter Bezrukov</h3>
-                    </li>
-                </ul>
+            <div class="blocks">
+                <div id="leftSide">
+                    <h1>Участники</h1>
+                    <ul id="membersList">
+                    </ul>
+                </div>
+                <div id="rightSide">
+                    <h1>Настройки</h1>
+                    <ul class="settingsList">
+                        
+                    </ul>
+                </div>
             </div>
-            <div id="rightSide">
-                <h1>Настройки</h1>
-                <ul class="settingsList">
-                    
-                </ul>
+            <div class="controlButtons">
+                <button id="enterQueue" class="myBtn">Встать в очередь</button>
+                <button id="leaveQueue" class="myBtn">Выйти из очереди</button>
+                <button id="freezeSelf" class="myBtn">Заморозиться</button>
+                <button id="popFirstOne" class="myBtn">Выкинуть первого</button>
+            </div>
+            <div class="navButtons">
+                <a href="queueList.html"  class="myBtn">
+                    <div>Назад</div>
+                </a>
             </div>
         </main>
         <footer>

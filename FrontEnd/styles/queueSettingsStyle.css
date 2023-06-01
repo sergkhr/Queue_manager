@@ -1,9 +1,9 @@
-main {
+.blocks {
   display: flex;
   justify-content: space-evenly;
   height: fit-content;
 }
-main > div {
+.blocks > div {
   background-color: var(--back-additional-color);
   padding: 0 20px;
   margin: 10px 0;
@@ -13,18 +13,30 @@ main > div {
   color: var(--main-color);
   box-shadow: 0px 0px 20px -5px #2a2a2a;
 }
-main > div > ul {
+.blocks > div > ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
-main > div > ul > li {
+.blocks > div > ul > li {
   margin: 10px 0;
 }
-main > div > ul > li > h2 {
+.blocks > div > ul > li > h2 {
   display: inline;
   margin-right: 10px;
 }
-main > div > ul > li > h3 {
+.blocks > div > ul > li > h3 {
   display: inline;
+}
+main > div {
+  margin-bottom: 30px;
+}
+main .controlButtons {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+main .navButtons {
+  display: flex;
+  justify-content: space-evenly;
 }
