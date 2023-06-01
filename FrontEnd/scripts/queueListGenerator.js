@@ -1,14 +1,14 @@
-function generateQueueListElement(id){
+function generateQueueListElement(queue){
     let container = $("#listContainer");
 
     let addingElement = $("\
         <div class=\"queueBlock\">\
             <div class=\"textWrapper\">\
-                <h1>Queue name</h1>\
-                <b>Участников: <span class=\"memberCount\">23</span></b>\
-                <p class=\"queueDesciption\">Lorem Ipsum jhghgh gdgdg jhkjh gdsggd jjhg j hgdgfd idusajhf iudssahhd sjashgd</p>\
+                <h1>"+ queue.name +"</h1>\
+                <b>Участников: <span class=\"memberCount\">"+ queue.queuedPeople.length +"</span></b>\
+                <p class=\"queueDesciption\">"+ queue.description +"</p>\
             </div>\
-            <a href=\"queueSettings.html?id=" + id + "\"  class=\"queueSettingsBtn\">\
+            <a href=\"queueSettings.html?id=" + queue._id + "\"  class=\"queueSettingsBtn myBtn\">\
                 <div>Подробнее</div>\
             </a>\
         </div>");
@@ -16,6 +16,10 @@ function generateQueueListElement(id){
     container.append(addingElement);
 }
 
-for(let i = 2; i <= 4; i++){
-    generateQueueListElement(i);
-}
+
+queueList = getQueueList(); // queueList is a promise
+queueList.then((data) => {
+   data.forEach((queue) => {
+       generateQueueListElement(queue);
+   });
+});

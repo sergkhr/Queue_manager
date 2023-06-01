@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb";
 import { Result } from "../Result.js";
 import { Application } from "../app.js";
 import Express from "express"
+import { PeopleType } from "../queue/Queue.js";
 
 export function get(this: Application, req: Express.Request, res: Express.Response) {
     console.log("Queue get");
@@ -26,7 +27,9 @@ export function post(this: Application, req: Express.Request, res: Express.Respo
 
 export function put(this: Application, req: Express.Request, res: Express.Response) {
     let logged = req.body.logged;
-    let login = (logged ? "" : "ul:") + req.body.login;
+    let type = logged ? PeopleType.SITE : PeopleType.NOT_LOGGED;
+    let login = req.body.login;
+
     console.log("Queue put: " + req.params.id + " " + req.body.command)
     let queueId: ObjectId;
     try {
@@ -47,7 +50,7 @@ export function put(this: Application, req: Express.Request, res: Express.Respon
     }
     switch (req.body.command) {
         case "join": {
-            this.queueManager.joinQueue(queueId, login).then(result => {
+            this.queueManager.joinQueue(queueId, login, type).then(result => {
                 res.json(result);
             });
             break;

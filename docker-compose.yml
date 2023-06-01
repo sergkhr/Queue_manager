@@ -9,7 +9,7 @@ services:
     environment:
       - DB_HOST=db
       - DB_PORT=27017
-      - DB_RS=myRS
+      - DB_RS=qm_rs
     volumes:
       - ./backend/config.json:/server/config.json
   db:

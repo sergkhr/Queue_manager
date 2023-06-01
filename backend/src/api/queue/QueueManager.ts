@@ -1,4 +1,4 @@
-import { Queue, Config, IQueue, AccessType, UserState } from "./Queue.js";
+import { Queue, Config, IQueue, AccessType, UserState, PeopleType } from "./Queue.js";
 import Db, { ObjectId } from "mongodb"
 import { Result } from "../Result.js";
 import Express from "express";
@@ -49,10 +49,11 @@ export class QueueManager {
             } else {
                 // return queues.map(item => {
                 //     return {
+                //         _id: item._id,
                 //         name: item.name,
                 //         description: item.description,
-                //         length: item.config.length,
-                //         count: item.queuedPeople.length
+                //         config: item.config,
+                //         peopleCount: item.queuedPeople.length
                 //     }
                 // });
                 return queues;
@@ -108,11 +109,17 @@ export class QueueManager {
         })
     }
 
-    async joinQueue(id: ObjectId, login: string) {
+    async joinQueue(id: ObjectId, login: string, type: PeopleType) {
         if (await this.isUserInQueue(id, login)) {
             return new Result(false, "You are already in queue");
         }
-        return await this.db.collection("Queues").updateOne({_id: id}, {$push: {queuedPeople: {login: login}}}).catch(err => {
+        return await this.db.collection("Queues").updateOne({_id: id}, {$push: {
+            queuedPeople: {
+                login: login,
+                frozen: false,
+                type: type
+            }
+        }}).catch(err => {
             console.log("Something went wrong during \"Queues\" updateOne");
             console.log(err);
             return new Result(false, "Something went wrong during \"Queues\" updateOne");
@@ -155,14 +162,18 @@ export class QueueManager {
         let queue = await this.db.collection("Queues").findOne({_id: id, queuedPeople: {$elemMatch: {login: login}}}) as unknown as IQueue;
 
         let newUser: UserState = {
-            login: login
+            login: login,
+            frozen: false,
+            type: PeopleType.NOT_LOGGED
         };
 
-        for(let i in queue.queuedPeople) {
+        for (let i in queue.queuedPeople) {
             if (queue.queuedPeople[i].login == login) {
                 if (!queue.queuedPeople[i].frozen) {
-                    newUser.frozen = true
+                    newUser.frozen = true;
+                    
                 }
+                newUser.type = queue.queuedPeople[i].type;
             }
         }
             return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}}, 

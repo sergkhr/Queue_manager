@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>#Фиксирую</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../styles/forAll.css">
+        <link rel="stylesheet" href="../styles/addQueueStyle.css">
+    </head>
+    <body>
+
+        <header>
+            <a href="greetingsPage.html" id="logo">
+                <div>
+                    <h1>#Фиксирую</h1>
+                </div>
+            </a>
+            <div id="account">
+                <img src="../img/user-profile-icon-vector.svg">
+            </div>
+        </header>
+
+
+        <main>
+            <form class="queueAddingForm">
+                <div class="inputBlock">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" required>
+                </div>
+                
+                <div class="inputBlock">
+                    <label for="description">Description:</label>
+                    <input type="text" id="description">
+                </div>
+            
+                <div class="formButtons">
+                    <a href="queueList.html"  class="addQueueButton myBtn">
+                        <div>Назад</div>
+                    </a>
+                    <input type="button" value="Создать очередь" onclick="createQueue()" class="myBtn">
+                </div>
+            </form>
+        </main>
+        <footer>
+
+        </footer>
+
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+        <script src="../scripts/toBackScript.js"></script>
+        <script src="../scripts/addQueueScript.js"></script>
+    </body>
+</html>

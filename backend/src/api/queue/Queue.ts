@@ -18,9 +18,16 @@ export interface IQueue {
     vkConfs?: number[];
 }
 
+export enum PeopleType {
+    SITE = "SITE",
+    NOT_LOGGED = "NOT_LOGGED",
+    VK = "VK"
+}
+
 export interface UserState {
+    type: PeopleType;
     login: string;
-    frozen?: boolean;
+    frozen: boolean;
 }
 
 export class Queue implements IQueue{
@@ -47,10 +54,12 @@ export class Queue implements IQueue{
         return Array.from(this.queuedPeople);
     }
 
-    addPeople(login: string, loginType: string) {
+    addPeople(login: string, loginType: string, type: PeopleType) {
         if (!this.config.length || this.queuedPeople.length < this.config.length) {
             this.queuedPeople.push({
-                login: login
+                type: type,
+                login: login,
+                frozen: false
             });
             return true;
         }
