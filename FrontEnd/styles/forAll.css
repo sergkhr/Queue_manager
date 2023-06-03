@@ -85,6 +85,7 @@ header #account img {
   cursor: pointer;
   padding: 20px;
   white-space: nowrap;
+  line-height: 0;
 }
 .myBtn:hover {
   filter: brightness(1.05);

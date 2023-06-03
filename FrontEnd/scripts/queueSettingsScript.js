@@ -3,10 +3,15 @@ let id = url.searchParams.get("id");
 
 
 function generateQueuedPeopleListElement(person, index){
+    let name = person.login;
+    if(person.type == 'SITE'){
+        name = usernameByLogin[person.login];
+    }
+
     let list = $("#membersList");
     let addingElement = $("<li>\
                             <h2>" + (index+1) + "</h2>\
-                            <h3>" + person.login + "</h3>\
+                            <h3>" + name + "</h3>\
                         </li>");
     list.append(addingElement);
 
@@ -16,7 +21,7 @@ function generateQueuedPeopleListElement(person, index){
 
 }
 
-function queuedPeopleGenerate(queuedPeople){
+function queuedPeopleGenerate(queuedPeople){ //used in updating the list (but not the first time)
     //clear the list
     $("#membersList").empty();
     //generate the list
@@ -25,16 +30,87 @@ function queuedPeopleGenerate(queuedPeople){
     });
 }
 
+async function firstListGeneration(queuedPeople){ //used in generating the list for the first time
+
+    const promises = queuedPeople.map((person) => {
+        return getUserByLogin(person.login)
+          .then((user) => {
+            usernameByLogin[person.login] = user.username;
+          });
+      });
+    
+      await Promise.all(promises);
+      queuedPeopleGenerate(queuedPeople);
+}
+
+
 
 //first time queue generation
 
-queuedPeople = [];
-currentQueue = getQueueById(id);
-currentQueue.then((queue) => {
+let queuedPeople = [];
+let usernameByLogin = {};
+getQueueById(id).then((queue) => {
     //console.log(queue);
     queuedPeople = queue.queuedPeople;
-    queuedPeopleGenerate(queuedPeople);
+    firstListGeneration(queuedPeople);
 });
+
+
+//------------------//
+// button handlers
+//------------------//
+
+// enter queue handler
+$("#enterQueue").click(() => {
+    let token = localStorage.getItem("queueManagerToken");
+
+    if(token != null){
+        loginEnter(token);
+    }
+    else{
+        noLoginEnter();
+    }
+});
+
+function noLoginEnter(){
+    let name = prompt("Please enter your name", "Akakiy Akakievich");
+    if(name != null){
+        enterQueueNoLogin(id, name);
+    }
+    else{
+        alert("You must enter your name to enter the queue");
+    }
+}
+
+function loginEnter(token){
+    enterQueue(id, token).then((data) => {
+        if(!data.success){
+            alert("Вы уже в очереди");
+        }
+    });
+    let userLogin = decodeJwt(token).login;
+    getUserByLogin(userLogin).then((user) => {
+        usernameByLogin[userLogin] = user.username; 
+    });
+}
+
+
+// leave queue handler
+$("#leaveQueue").click(() => {
+    let token = localStorage.getItem("queueManagerToken");
+    leaveQueue(id, token);
+});
+
+
+//kick first handler
+$("#popFirstOne").click(() => {
+    popFirstOne(id);
+});
+
+
+//------------------//
+// end of button handlers
+//------------------//
 
 
 
@@ -42,7 +118,7 @@ currentQueue.then((queue) => {
 let eventSource = new EventSource(ip + "/queue/" + id + "/subscribe");
 eventSource.onmessage = function(event){
     let data = JSON.parse(event.data);
-    console.log(data);
+    //console.log(data);
 
     if(data.op == "update"){
         let update = data.update;
@@ -61,47 +137,4 @@ eventSource.onmessage = function(event){
         
         queuedPeopleGenerate(queuedPeople);
     }
-}
-
-
-
-// button handlers
-
-// enter queue handler
-$("#enterQueue").click(() => {
-    logged = false;
-    // TODO: check login
-
-    if(logged){
-
-    }
-    else{
-        noLoginEnter();
-    }
-});
-
-function noLoginEnter(){
-    let name = prompt("Please enter your name", "Akakiy Akakievich");
-    if(name != null){
-        let promise = enterQueueNoLogin(id, name);
-        promise.then((data) => {
-            console.log(data);
-        });
-    }
-    else{
-        alert("You must enter your name to enter the queue");
-    }
-}
-
-
-//kick first handler
-$("#popFirstOne").click(() => {
-    kickFirstOne();
-});
-
-// kick(in the ASS), cause I hate those mfers
-function kickFirstOne(){
-    popFirstOne(id).then((data) => {
-        console.log(data);
-    });
 }

@@ -15,7 +15,7 @@
                     <h1>#Фиксирую</h1>
                 </div>
             </a>
-            <a href="loginScreen.html" id="account">
+            <a href="accountPage.html" id="account">
                 <img src="../img/user-profile-icon-vector.svg">
             </a>
         </header>
@@ -25,20 +25,21 @@
             <div id="logRegStorage">
                 <div id="loginContainer" class="logRegCont">
                     <h1>Вход</h1>
-                    <form id="loginForm">
+                    <div id="loginForm">
                         <input type="text" name="login" placeholder="Логин" required>
                         <input type="password" name="password" placeholder="Пароль" required>
-                        <input type="submit" value="Войти" class="myBtn">
-                    </form>
+                        <button class="myBtn" onclick="loginUser()">Войти</button>
+                    </div>
                 </div>
                 <div id="registrationContainer" class="logRegCont hidden">
                     <h1>Регистрация</h1>
-                    <form id="registrationForm" onsubmit="registerNewUser()">
+                    <div id="registrationForm" >
                         <input type="text" name="login" placeholder="Логин" required>
+                        <input type="text" name="username" placeholder="Отображаемое имя" required>
                         <input type="password" name="password" placeholder="Пароль" required>
                         <input type="password" name="passwordRepeat" placeholder="Повторите пароль" required>
-                        <input type="submit" value="Зарегистрироваться" class="myBtn" >
-                    </form>
+                        <button class="myBtn" onclick="registerNewUser()">Зарегистрироваться</button>
+                    </div>
                 </div>
                 <div class="buttonStorage">
                     <button id="changeForm" class="myBtn">Попробовать зарегистрироваться</button>

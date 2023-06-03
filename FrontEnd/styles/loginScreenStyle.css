@@ -5,12 +5,17 @@ main {
 main #logRegStorage .logRegCont {
   background-color: var(--back-additional-color);
   padding: 20px;
-  margin: 10px 0;
+  margin: 10px auto;
   width: 80%;
   min-width: fit-content;
   border-radius: 10px;
   color: var(--main-color);
   box-shadow: 0px 0px 20px -5px #2a2a2a;
+}
+main #logRegStorage .logRegCont input[type="text"],
+main #logRegStorage .logRegCont input[type="password"] {
+  width: calc(50% - 30px);
+  margin-bottom: 20px;
 }
 main #logRegStorage .hidden {
   display: none;

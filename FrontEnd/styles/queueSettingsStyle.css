@@ -2,6 +2,8 @@
   display: flex;
   justify-content: space-evenly;
   height: fit-content;
+  min-height: 200px;
+  height: calc(95% - 250px);
 }
 .blocks > div {
   background-color: var(--back-additional-color);
@@ -39,4 +41,9 @@ main .controlButtons {
 main .navButtons {
   display: flex;
   justify-content: space-evenly;
+}
+@media screen and (max-width: 640px) {
+  .blocks {
+    height: calc(95% - 460px);
+  }
 }
