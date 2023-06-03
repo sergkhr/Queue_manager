@@ -90,3 +90,22 @@ function register(name, password){
         });
     });
 }
+
+function login(name, password){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: ip + "/login",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                login: name, password: password
+            }),
+            success: function(data){
+                resolve(data);
+            },
+            error: function(err){
+                reject(err);
+            }
+        });
+    });
+}
