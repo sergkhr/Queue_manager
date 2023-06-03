@@ -1,0 +1,35 @@
+main {
+  padding-top: 20px;
+  box-sizing: border-box;
+}
+main #logRegStorage .logRegCont {
+  background-color: var(--back-additional-color);
+  padding: 20px;
+  margin: 10px 0;
+  width: 80%;
+  min-width: fit-content;
+  border-radius: 10px;
+  color: var(--main-color);
+  box-shadow: 0px 0px 20px -5px #2a2a2a;
+}
+main #logRegStorage .hidden {
+  display: none;
+}
+main #logRegStorage input[type="text"],
+main #logRegStorage input[type="password"] {
+  margin-left: 20px;
+  font-size: 1.5em;
+  border: none;
+  border-bottom: 2px solid var(--main-color);
+  background-color: transparent;
+  color: var(--main-color);
+}
+main #logRegStorage input[type="text"]:focus,
+main #logRegStorage input[type="password"]:focus {
+  outline: none;
+}
+main .buttonStorage {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}

@@ -68,3 +68,25 @@ function popFirstOne(id){
         });
     });
 }
+
+function register(name, password){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: ip + "/users",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                command: "create",
+                arguments: {
+                    login: name, password: password
+                }
+            }),
+            success: function(data){
+                resolve(data);
+            },
+            error: function(err){
+                reject(err);
+            }
+        });
+    });
+}

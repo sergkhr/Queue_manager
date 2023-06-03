@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>#Фиксирую</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../styles/forAll.css">
+        <link rel="stylesheet" href="../styles/loginScreenStyle.css">
+    </head>
+    <body>
+
+        <header>
+            <a href="greetingsPage.html" id="logo">
+                <div>
+                    <h1>#Фиксирую</h1>
+                </div>
+            </a>
+            <a href="loginScreen.html" id="account">
+                <img src="../img/user-profile-icon-vector.svg">
+            </a>
+        </header>
+
+
+        <main>
+            <div id="logRegStorage">
+                <div id="loginContainer" class="logRegCont">
+                    <h1>Вход</h1>
+                    <form id="loginForm">
+                        <input type="text" name="login" placeholder="Логин" required>
+                        <input type="password" name="password" placeholder="Пароль" required>
+                        <input type="submit" value="Войти" class="myBtn">
+                    </form>
+                </div>
+                <div id="registrationContainer" class="logRegCont hidden">
+                    <h1>Регистрация</h1>
+                    <form id="registrationForm" onsubmit="registerNewUser()">
+                        <input type="text" name="login" placeholder="Логин" required>
+                        <input type="password" name="password" placeholder="Пароль" required>
+                        <input type="password" name="passwordRepeat" placeholder="Повторите пароль" required>
+                        <input type="submit" value="Зарегистрироваться" class="myBtn" >
+                    </form>
+                </div>
+                <div class="buttonStorage">
+                    <button id="changeForm" class="myBtn">Попробовать зарегистрироваться</button>
+                </div>
+            </div>
+            <div class="buttonStorage">
+                <a href="queueList.html"  class="myBtn">
+                    <div>Очереди</div>
+                </a>
+            </div>
+        </main>
+
+
+        <footer>
+
+        </footer>
+
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+        <script src="../scripts/toBackScript.js"></script>
+        <script src="../scripts/loginScreenScript.js"></script>
+    </body>
+</html>
