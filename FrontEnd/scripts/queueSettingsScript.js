@@ -48,11 +48,17 @@ eventSource.onmessage = function(event){
         let update = data.update;
         let updateKey = Object.keys(update)[0];
         let updateValue = update[updateKey];
-        let updateKeySplit = updateKey.split(".");
-        let updateKeyIndex = updateKeySplit[1];
-        queuedPeople[updateKeyIndex] = updateValue;
+        if(updateKey.indexOf(".") != -1){
+            // update: queuedPeople.0 : {}
+            let updateKeySplit = updateKey.split(".");
+            let updateKeyIndex = updateKeySplit[1];
+            queuedPeople[updateKeyIndex] = updateValue;
+        }
+        else{
+            // update: queuedPeople : []
+            queuedPeople = updateValue;
+        }
         
-        //update the list
         queuedPeopleGenerate(queuedPeople);
     }
 }
