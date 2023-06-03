@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { Result } from "../Result.js";
+import { PeopleType } from "../queue/Queue.js";
 export function get(req, res) {
     console.log("Queue get");
     let queueId;
@@ -22,7 +23,8 @@ export function post(req, res) {
 }
 export function put(req, res) {
     let logged = req.body.logged;
-    let login = (logged ? "" : "ul:") + req.body.login;
+    let type = logged ? PeopleType.SITE : PeopleType.NOT_LOGGED;
+    let login = req.body.login;
     console.log("Queue put: " + req.params.id + " " + req.body.command);
     let queueId;
     try {
@@ -42,7 +44,7 @@ export function put(req, res) {
     }
     switch (req.body.command) {
         case "join": {
-            this.queueManager.joinQueue(queueId, login).then(result => {
+            this.queueManager.joinQueue(queueId, login, type).then(result => {
                 res.json(result);
             });
             break;

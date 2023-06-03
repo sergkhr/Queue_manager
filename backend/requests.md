@@ -8,7 +8,7 @@
 body: {
     command: "create",
     arguments: {
-        login: string, password: string
+        login: string, password: string, username: string
     }
 }
 ```
