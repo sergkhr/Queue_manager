@@ -1,3 +1,7 @@
+let url = new URL(window.location.href);
+let id = url.searchParams.get("id");
+
+
 function generateQueuedPeopleListElement(person, index){
     let list = $("#membersList");
     let addingElement = $("<li>\
@@ -6,7 +10,7 @@ function generateQueuedPeopleListElement(person, index){
                         </li>");
     list.append(addingElement);
 
-    // console.log(queuedPeople);
+    //console.log(queuedPeople);
     // console.log(list);
     // console.log(addingElement);
 
@@ -23,8 +27,7 @@ function queuedPeopleGenerate(queuedPeople){
 
 
 //first time queue generation
-let url = new URL(window.location.href);
-let id = url.searchParams.get("id");
+
 queuedPeople = [];
 currentQueue = getQueueById(id);
 currentQueue.then((queue) => {
@@ -45,11 +48,17 @@ eventSource.onmessage = function(event){
         let update = data.update;
         let updateKey = Object.keys(update)[0];
         let updateValue = update[updateKey];
-        let updateKeySplit = updateKey.split(".");
-        let updateKeyIndex = updateKeySplit[1];
-        queuedPeople[updateKeyIndex] = updateValue;
+        if(updateKey.indexOf(".") != -1){
+            // update: queuedPeople.0 : {}
+            let updateKeySplit = updateKey.split(".");
+            let updateKeyIndex = updateKeySplit[1];
+            queuedPeople[updateKeyIndex] = updateValue;
+        }
+        else{
+            // update: queuedPeople : []
+            queuedPeople = updateValue;
+        }
         
-        //update the list
         queuedPeopleGenerate(queuedPeople);
     }
 }
@@ -82,4 +91,17 @@ function noLoginEnter(){
     else{
         alert("You must enter your name to enter the queue");
     }
+}
+
+
+//kick first handler
+$("#popFirstOne").click(() => {
+    kickFirstOne();
+});
+
+// kick(in the ASS), cause I hate those mfers
+function kickFirstOne(){
+    popFirstOne(id).then((data) => {
+        console.log(data);
+    });
 }
