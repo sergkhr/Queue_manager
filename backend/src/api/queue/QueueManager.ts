@@ -178,6 +178,8 @@ export class QueueManager {
         }
             return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}}, 
                         {$set: {"queuedPeople.$": newUser}}).catch(err => {
+            // return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}},
+            //             {$set: {"queuedPeople.$"}})
             console.log("Something went wrong during \"Queues\" updateOne");
             console.log(err);
             return null;
@@ -195,10 +197,13 @@ export class QueueManager {
         let i = people.findIndex(item => {
             return !item.frozen;
         })
-        if (i >= 0) {
-            people.splice(i, 1)
-        }
-        return await this.db.collection("Queues").updateOne({_id: id}, {$set: {queuedPeople: people}}).catch(err => {
+        let state = people[i];
+        // if (i >= 0) {
+        //     people.splice(i, 1)
+        // }
+        // return await this.db.collection("Queues").updateOne({_id: id}, {$pull: {queuedPeople: {login: login}}}).catch(err => {
+        return await this.db.collection("Queues").updateOne({_id: id}, {$pull: {queuedPeople: {login: state.login}}}).catch(err => {
+        // return await this.db.collection("Queues").updateOne({_id: id}, {$set: {queuedPeople: people}}).catch(err => {
             console.log(err);
             return new Result(false, err);
         }).then(item => {

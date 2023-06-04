@@ -1,0 +1,17 @@
+main #accountInfo {
+  background-color: var(--back-additional-color);
+  padding: 0 20px;
+  margin: 10px auto;
+  width: 80%;
+  min-width: fit-content;
+  border-radius: 10px;
+  color: var(--main-color);
+  box-shadow: 0px 0px 20px -5px #2a2a2a;
+  display: flex;
+  justify-content: space-around;
+}
+main .buttonStorage {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-evenly;
+}
