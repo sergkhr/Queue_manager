@@ -1,7 +1,7 @@
 import { Result } from "../Result.js";
 import { Application } from "../app.js";
 import Express from "express"
-import { IQueue } from "../queue/Queue.js";
+import { IQueue, PeopleType } from "../queue/Queue.js";
 import { ObjectId } from "mongodb";
 
 export function get(this: Application, req: Express.Request, res: Express.Response) {
@@ -15,16 +15,24 @@ export function get(this: Application, req: Express.Request, res: Express.Respon
 export function post(this: Application, req: Express.Request, res: Express.Response) {
     console.log("Queues post " + req.body.command);
     if (req.body.command == "create") {
-        let queue = req.body.arguments as IQueue;
-        queue.config = {
-            owner: req.body.login
+        if (!req.body.logged) {
+            res.json(new Result(false, "You must be logged to create queue"));
         }
+        let queue = req.body.arguments as IQueue;
+        queue.config = queue.config || {};
+        queue.config.owner = {
+            login: req.body.login,
+            type: PeopleType.SITE
+        }
+        
         if (!queue.name) {
             res.json(new Result(false, "Name must be defined"));
         }
         this.queueManager.createQueue(queue).then(result => {
             res.json(result);
         });
+    } else {
+        res.json(new Result(false));
     }
 }
 

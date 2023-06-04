@@ -51,7 +51,9 @@ export class QueueManager {
             console.log(err);
             return new Result(false);
         }).then(item => {
-            return new Result(true);
+            let oid = item;
+            console.log(oid.insertedId.toString());
+            return new Result(true, oid.insertedId.toString());
         });
     }
     async hasRights(id, login) {
@@ -59,7 +61,7 @@ export class QueueManager {
         if (!queue) {
             return false;
         }
-        if (queue.config.owner == login || queue.config.accessType == AccessType.PUBLIC) {
+        if (queue.config.owner.login == login || queue.config.accessType == AccessType.PUBLIC) {
             return true;
         }
         return false;

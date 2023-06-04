@@ -39,7 +39,10 @@ body: {
 }
 
 Config: {
-    owner?: number,
+    owner?: {
+        login: string,
+        type: string
+    },
     accessType?: "public" | "private"
     length?: number
 }

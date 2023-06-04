@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 export enum AccessType {
     PUBLIC = "PUBLIC",
     PRIVATE = "PRIVATE",
@@ -5,12 +7,16 @@ export enum AccessType {
 }
 
 export type Config = {
-    owner?: string,
+    owner: {
+        login: string,
+        type: PeopleType
+    },
     accessType?: AccessType,
     length?: number
 }
 
 export interface IQueue {
+    _id?: ObjectId;
     name: string;
     description?: string;
     config: Config;
@@ -36,7 +42,6 @@ export class Queue implements IQueue{
     config: Config;
     queuedPeople: UserState[];
     vkConfs: number[];
-
 
     constructor(queue: IQueue){
         this.name = queue.name;

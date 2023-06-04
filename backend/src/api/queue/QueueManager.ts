@@ -69,7 +69,9 @@ export class QueueManager {
             console.log(err);
             return new Result(false);
         }).then(item => {
-            return new Result(true);
+            let oid = (item as unknown as Db.InsertOneResult<Db.BSON.Document>)
+            console.log(oid.insertedId.toString());
+            return new Result(true, oid.insertedId.toString());
         });
     }
 
@@ -78,7 +80,7 @@ export class QueueManager {
         if (!queue) {
             return false;
         }
-        if (queue.config.owner == login || queue.config.accessType == AccessType.PUBLIC) {
+        if (queue.config.owner.login == login || queue.config.accessType == AccessType.PUBLIC) {
             return true;
         }
         return false;
@@ -176,7 +178,7 @@ export class QueueManager {
                 newUser.type = queue.queuedPeople[i].type;
             }
         }
-            return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}}, 
+        return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}}, 
                         {$set: {"queuedPeople.$": newUser}}).catch(err => {
             // return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}},
             //             {$set: {"queuedPeople.$"}})
