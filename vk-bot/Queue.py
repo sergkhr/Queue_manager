@@ -14,7 +14,7 @@ class Owner:
 
 
 class Queue:
-    def __init__(self, peer_id, owner, id=0, name="", description="", accessType="PUBLIC", delay=0):
+    def __init__(self, peer_id, owner, id=0, name="", description="", accessType="PRIVATE", queuedPeople=[], delay=0):
         if id != 0:
             self._id = id
         self.name = name
@@ -26,14 +26,14 @@ class Queue:
             },
             "accessType": accessType
         }
-        self.queuedPeople = []
+        self.queuedPeople = queuedPeople
         self.vkConfs = [peer_id]
         if delay != 0:
             self.config["start"] = time.time() + delay*60
 
     @classmethod
     def from_map(cls, map):
-        return cls(map["vkConfs"], map["config"]["owner"], map["_id"],  map["name"], map["description"],  map["config"]["accessType"])
+        return cls(map["vkConfs"], map["config"]["owner"], map["_id"],  map["name"], map["description"],  map["config"]["accessType"], map["queuedPeople"])
 
     def to_json(self):
         return self.__dict__
@@ -44,6 +44,9 @@ class Queue:
     def set_name(self, name):
         self.name = name
 
+    def set_description(self, description):
+        self.description = description
+
     def is_user_in_queue(self, user) -> bool:
         for i in self.queuedPeople:
             if user.login == i.login:
@@ -51,6 +54,7 @@ class Queue:
         return False
 
     def show(self) -> str:
+        print(self.queuedPeople)
         if len(self.queuedPeople) == 0:
             return "-"
         result = ""
@@ -58,7 +62,11 @@ class Queue:
             result += f"{i + 1}) "
             if self.queuedPeople[i]["frozen"]:
                 result += "❄"
-            result += who["username"] + "\n"
+            print(who)
+            if who["type"] == "NOT_LOGGED":
+                result += who["login"] + "\n"
+            else:
+                result += who["username"] + "\n"
         return result
 
     def info(self) -> str:

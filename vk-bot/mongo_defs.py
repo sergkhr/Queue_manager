@@ -142,6 +142,12 @@ def set_queue_name(queue, name):
     queue.set_name(name)
 
 
+def set_queue_description(queue, description):
+    collection_queues.update_one({"_id": queue._id}, {"$set": {"description": description}})
+    queue.set_description(description)
+
+
+
 def add_fix(qu, id, no_message, event):
     try:
         from_id = event.obj['message']['from_id']
@@ -157,3 +163,62 @@ def add_fix(qu, id, no_message, event):
     except BaseException as ex:
         print(ex)
         send_message(id, "Ошибка добавления в очередь")
+
+
+def all_queue(id):
+    queues = collection_queues.find({"vkConfs": {"$elemMatch": {"$eq": id}}})
+    if queues is None:
+        send_message(id, "Очередей нет.")
+    else:
+        result = "Очереди:\n"
+        for queue in queues:
+            result += queue["name"] + "\n"
+        send_message(id, result)
+
+
+def goto(msg, id, condition, have_queue):
+    msg = msg.replace("#гото", "").strip()
+    flag = False
+    try:
+        num = int(msg)
+    except ValueError:
+        send_message(id, "Ошибка конвертации в число, возможно присутствуют символы")
+        flag = True
+    if not flag:
+        if num == 0:
+            num = 1
+        queues = collection_queues.find({"vkConfs": {"$elemMatch": {"$eq": id}}})
+        if len(queues) < num or num < 1:
+            send_message(id, "Очереди по этому порядковому номеру не существует.")
+        else:
+            condition[id][0] = Queue.from_map(queues[num - 1])
+            condition[id][1] = True
+            if not have_queue:
+                send_message(id, "Очередь была сменена")
+            else:
+                send_message(id, "Очередь была запущена.")
+
+
+def pop_timer(buf, id):
+    time.sleep(5)
+    buf[id][5] = False
+
+
+def pop(id, qu, pop_wait, no_message, buf):
+    if not pop_wait:
+        deleted = qu.pop()
+        if deleted == "-":
+            send_message(id, "Очередь пуста")
+        else:
+            res = ""
+            if not no_message:
+                res += f"{deleted} был(а) удален(а) из очереди\n"
+            next = qu.get_first()
+            if next != "":
+                res += f"Следующий(-ая): [id{next.get_user_id()}|{next.get_name()}]"
+            send_message(id, res)
+            buf[id][5] = True
+            Thread(target=pop_timer, args=(buf, id,)).start()
+    else:
+        send_message(id, "Защита двойного удаления, 5сек.")
+

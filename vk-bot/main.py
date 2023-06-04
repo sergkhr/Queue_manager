@@ -11,7 +11,8 @@ from threading import Thread
 import time
 from global_defs import vk, vk_session, longpoll, send_message, full_name
 from queue_defs import *
-from mongo_defs import create_queue, open_queue_name, quit_queue, set_queue_name, setup_listener, add_fix, commit
+from mongo_defs import create_queue, open_queue_name, quit_queue, set_queue_name, setup_listener, add_fix, commit, \
+    all_queue, set_queue_description, goto
 
 
 def main():
@@ -81,7 +82,7 @@ def main():
                 print(f"Get {msg}")
             if len(state[id]) != 0:
                 commit(state, id, condition, msg,queue)
-            elif msg == "#запуск" and not have_queue or msg == "#начать" and not have_queue:
+            elif msg == "#запуск" and not have_queue or msg == "#начать" and not have_queue or msg == "#старт" and not have_queue:
                 create_queue(condition, id, event)
             elif "#запуск" in msg and not have_queue:
                 name = event.obj['message']['text']
@@ -97,9 +98,9 @@ def main():
                 send_message(id, "Очередь уже запущена")
             elif msg in commands and not have_queue:
                 send_message(id, "Очередь не запущена. Чтобы запустить очередь, напишите #запуск")
-            elif msg == "#выход" and have_queue:
+            elif msg == "#закрыть" and have_queue:
                 quit_queue(id, state)
-            elif msg == "#выход" and not have_queue:
+            elif msg == "#закрыть" and not have_queue:
                 send_message(id, "В данный момент очереди нет. "
                                  "Чтобы запустить, используйте команду #запуск")
             elif "#фиксирую" in msg and have_queue:
@@ -130,7 +131,7 @@ def main():
                     send_message(id, f"Установлено имя: {name}")
             elif "#описание" in msg and have_queue:
                 msg = msg.replace("#описание", "").strip()
-                qu.set_description(msg)
+                set_queue_description(qu, msg)
                 if not no_message:
                     send_message(id, f"Установлено описание: {msg}")
             elif msg == "#поп":
@@ -145,14 +146,6 @@ def main():
                 else:
                     result = qu.info() + "\n" + qu.show()
                     send_message(id, result)
-            elif msg == "#фиксация":
-                if qu.get_name() == "":
-                    send_message(id, "Нельзя сохранить очередь без названия")
-                else:
-                    if fixation(id, queue, qu):
-                        send_message(id, "Очередь сохранена.")
-                    else:
-                        send_message(id, "Очередь перезаписана")
             elif msg == "#анфикс":
                 unfix(id, queue, qu.get_name())
             elif msg == "#резня":
@@ -168,13 +161,14 @@ def main():
                 name = name.replace("#Анфикс", "").strip()
                 unfix(id, queue, name)
             elif msg == "#очереди":
-                all_queue(queue, id)
+                all_queue(id)
             elif "#перейти" in msg:
                 name = event.obj['message']['text']
                 name = name.replace("#перейти", "").strip()
-                change(name, id, queue, condition, state, have_queue)
+                open_queue_name(name, id, condition)
             elif msg == "#пропустить":
-                skip(qu, id, event)
+                #skip(qu, id, event)
+                send_message(id, "Временно не работает")
             elif msg == "#заморозка":
                 res = qu.freeze(full_name(event))
                 if not no_message:
@@ -198,7 +192,7 @@ def main():
                 name = name.replace("#покажи", "").strip()
                 cout(name, id, queue)
             elif "#гото" in msg:
-                goto(msg, id, state, queue, condition, have_queue)
+                goto(msg, id, condition, have_queue)
             elif msg == "#молчи":
                 if no_message:
                     send_message(id, "Бот и так молчит.")
@@ -215,14 +209,13 @@ def main():
                     send_message(id, "Теперь бот снова будет отвечать на сообщения #фиксирую")
             elif msg == "#помощь":
                 send_message(id, "#запуск – создать очередь\n"
-                                 "#выход – закрыть очередь\n"
+                                 "#закрыть – закрыть очередь\n"
                                  "#имя [имя] – пишите команду #имя и через пробел название для очереди\n"
                                  "#описание [описание] – пишите команду #описание и через пробел описание для очереди\n"
                                  "#фиксирую – добавить себя в очередь\n"
                                  "#поп – удалить первого участника из очереди, если он прошёл\n"
                                  "#выхожу – удалить себя из очереди\n"
                                  "#очередь – вывести очередь\n"
-                                 "#фиксация – сохранить очередь на сервер или обновить очередь(перезаписать)\n"
                                  "#анфикс – удалить очередь с сервера\n"
                                  "#очереди – вывести все сохранённые очереди\n"
                                  "#перейти [название] – перейти в очередь по названию. Обратите внимание, "
