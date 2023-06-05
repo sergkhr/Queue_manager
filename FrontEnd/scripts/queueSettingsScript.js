@@ -51,6 +51,7 @@ let queuedPeople = [];
 let usernameByLogin = {};
 getQueueById(id).then((queue) => {
     //console.log(queue);
+    $("#queueName").text(queue.name);
     queuedPeople = queue.queuedPeople;
     firstListGeneration(queuedPeople);
 });
@@ -63,6 +64,10 @@ getQueueById(id).then((queue) => {
 // enter queue handler
 $("#enterQueue").click(() => {
     let token = localStorage.getItem("queueManagerToken");
+    if(token != null && isTokenExpired(decodeJwt(token).exp)){
+        localStorage.removeItem("queueManagerToken");
+        token = null;
+    }
 
     if(token != null){
         loginEnter(token);
@@ -73,7 +78,7 @@ $("#enterQueue").click(() => {
 });
 
 function noLoginEnter(){
-    let name = prompt("Please enter your name", "Akakiy Akakievich");
+    let name = prompt("Please enter your name\nNote that you won't be able to leave queue", "Akakiy Akakievich");
     if(name != null){
         enterQueueNoLogin(id, name);
     }
@@ -98,6 +103,14 @@ function loginEnter(token){
 // leave queue handler
 $("#leaveQueue").click(() => {
     let token = localStorage.getItem("queueManagerToken");
+    if(isTokenExpired(decodeJwt(token).exp)){
+        localStorage.removeItem("queueManagerToken");
+        token = null;
+    }
+    if(token == null){
+        alert("You must be logged in to leave the queue");
+        return;
+    }
     leaveQueue(id, token);
 });
 
