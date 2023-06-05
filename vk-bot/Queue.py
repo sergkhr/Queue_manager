@@ -84,17 +84,34 @@ class Queue:
         else:
             return self.queuedPeople[0]["login"]
 
-    def get_next(self) -> str:
+    def get_next(self, login) -> str:
         if len(self.queuedPeople) > 1:
-            if self.queuedPeople[1]["type"] == "VK":
-                return f"[id{self.queuedPeople[1]['login']}|{self.queuedPeople[1]['username']}]"
-            else:
-                return self.queuedPeople[1]["login"]
+            for num, human in enumerate(self.queuedPeople):
+                if human["login"] == login:
+                    if len(self.queuedPeople) > num+1:
+                        for i in range(num,len(self.queuedPeople)):
+                            hum = self.queuedPeople[num+1]
+                            if hum["frozen"]:
+                                continue
+                            if hum["type"] == "VK":
+                                return f"[id{hum['login']}|{hum['username']}]"
+                            else:
+                                return hum["login"]
+                    else:
+                        return ""
         else:
             return ""
 
-    def pop(self) -> str:
+    def pop(self):
         for human in self.queuedPeople:
             if not human["frozen"]:
-                return human["login"]
+                if human["type"] == "VK":
+                    return human["login"], human["username"]
+                return human["login"], human["login"]
+        return "-"
+
+    def find_person(self, login):
+        for human in self.queuedPeople:
+            if human["login"] == login:
+                return human["frozen"]
         return "-"

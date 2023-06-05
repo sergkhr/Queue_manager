@@ -60,7 +60,6 @@ def create_queue(state, id, event, minutes=0):
                     "напишите #фиксирую. Чтобы убрать очередь, напишите #закрыть. "
                     "Чтобы получить все команды очереди, введите #помощь", keyboard=keyboard.get_keyboard())
     else:
-
         state[id][4] = True
         Thread(target=do_wait, args=(state, id, minutes,)).start()
         last_number = str(minutes)[-1]
@@ -133,9 +132,8 @@ def commit(state, id, buf, msg, queue):
             send_message(id, "Завершение очереди отменено.")
     elif state[id][0] == "удаление":
         if msg == "[club219286730|@queue_fixation] да":
-            queue[id].pop(state[id][1])
-            with open(f"{os.path.dirname(os.getcwd())}\\queue_file\\queue.pkl", 'wb') as f:
-                pickle.dump(queue, f)
+            collection_queues.delete_one({"_id": buf[id][0]._id})
+            buf[id][0] = None
             send_message(id, "Очередь удалена с сервера. Однако в случае записи в очередь людей и при этом "
                              "у очереди будет имя, она сохранится автоматически. Чтобы полностью удалить, "
                              "вызовите #выход")
@@ -143,6 +141,7 @@ def commit(state, id, buf, msg, queue):
         elif msg == "[club219286730|@queue_fixation] нет":
             state[id].clear()
             send_message(id, "Удаление очереди отменено.")
+
 
 def set_queue_name(queue, name):
     collection_queues.update_one({"_id":queue._id}, {"$set": {"name":name}})
@@ -230,7 +229,7 @@ def out(id, qu, no_message, event):
 
 def pop(id, qu, pop_wait, no_message, condition, event):
     if not pop_wait:
-        deleted = qu.pop()
+        deleted, username = qu.pop()
         if deleted == "-":
             send_message(id, f"Некого удалять.")
         #res = collection_queues.update_one({"_id": qu._id}, {"$pop": {"queuedPeople": -1}})
@@ -238,8 +237,8 @@ def pop(id, qu, pop_wait, no_message, condition, event):
         if res.modified_count == 1:
             res = ""
             if not no_message:
-                res += f"{qu.get_first()} был(а) удален(а) из очереди.\n"
-            next = qu.get_next()
+                res += f"{username} был(а) удален(а) из очереди.\n"
+            next = qu.get_next(deleted)
             if next != "":
                 res += f"Следующий(-ая) в очереди: {next}"
             if res != "":
@@ -248,6 +247,7 @@ def pop(id, qu, pop_wait, no_message, condition, event):
         Thread(target=pop_timer, args=(condition, id,)).start()
     else:
         send_message(id, "Защита двойного удаления, 5сек.")
+
 
 def freeze(id, qu, event, freeze=False):
     user_id = vk.users.get(user_ids=event.obj['message']['from_id'])[0]["id"]
@@ -263,5 +263,32 @@ def freeze(id, qu, event, freeze=False):
         else:
             send_message(id, f"{full_name(event)} был(а) разморожен(а)")
     else:
-        send_message(id, "Человек не найден.")
+        already_freeze = qu.find_person(user_id)
+        if already_freeze == "-":
+            send_message(id, "Человек не найден.")
+        elif already_freeze:
+            send_message(id, f"{full_name(event)} и так заморожен(а)")
+        else:
+            send_message(id, f"{full_name(event)} не заморожен.")
+
+
+def cout(id, name):
+    flag = False
+    qu = collection_queues.find_one({"name": name, "vkConfs": {"$elemMatch": {"$eq": id}}})
+    if qu is None:
+        send_message(id, "Очередь не найдена")
+    else:
+        queue = Queue.from_map(qu)
+        res = queue.info()
+        res += queue.show()
+        send_message(id,res)
+
+
+def add_another(id, qu, name):
+    user = {"type": "SITE", "login": name, "username": "", "frozen": False}
+    res = collection_queues.update_one({"_id":qu._id}, {"$push": {"queuedPeople": user}} )
+    if res.modified_count == 1:
+        send_message(id, f"{name} был внесён в очередь")
+
+
 

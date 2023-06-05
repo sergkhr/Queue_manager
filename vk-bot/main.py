@@ -12,7 +12,7 @@ import time
 from global_defs import vk, vk_session, longpoll, send_message, full_name
 from queue_defs import *
 from mongo_defs import create_queue, open_queue_name, quit_queue, set_queue_name, setup_listener, add_fix, commit, \
-    all_queue, set_queue_description, goto, pop, out, freeze
+    all_queue, set_queue_description, goto, pop, out, freeze, cout, add_another
 
 
 def main():
@@ -112,13 +112,7 @@ def main():
                 name = event.obj['message']['text']
                 name = name.replace("#добавить", "").strip()
                 name = name.replace("#Добавить", "").strip()
-                if qu.add(name):
-                    if not no_message:
-                        send_message(id, f"{name} внесен(а) в очередь")
-                    if have_name:
-                        fixation(id, queue, qu)
-                else:
-                    send_message(id, f"{name} уже в очереди.")
+                add_another(id, qu, name)
             elif ("#имя" in msg or "#название" in msg) and have_queue:
                 name = event.obj['message']['text']
                 name = name.replace("#имя", "").strip()
@@ -136,7 +130,7 @@ def main():
                     send_message(id, f"Установлено описание: {msg}")
             elif msg == "#поп":
                 pop(id, qu, pop_wait, no_message, condition, event)
-            elif msg == "#выхожу":
+            elif msg == "#выхожу" or msg == "#выход":
                 out(id, qu, no_message, event)
             elif msg == "#очередь":
                 res1 = qu.show()
@@ -210,7 +204,8 @@ def main():
                     condition[id][3] = False
                     send_message(id, "Теперь бот снова будет отвечать на сообщения #фиксирую")
             elif msg == "#помощь":
-                send_message(id, "#запуск – создать очередь\n"
+                send_message(id, "Версия бота 2.0, теперь он связан с базой данных\n"
+                                 "#запуск – создать очередь\n"
                                  "#закрыть – закрыть очередь\n"
                                  "#имя [имя] – пишите команду #имя и через пробел название для очереди\n"
                                  "#описание [описание] – пишите команду #описание и через пробел описание для очереди\n"
