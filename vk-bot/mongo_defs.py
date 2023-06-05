@@ -24,8 +24,6 @@ default_name = "defaultQueueName"
 result = collection_queues.find_one()
 
 
-
-
 def setup_listener(condition):
     change_stream = collection_queues.watch()
     for change in change_stream:
@@ -34,6 +32,7 @@ def setup_listener(condition):
         for key, i in zip(condition.keys(), condition.values()):
             try:
                 if change["documentKey"]["_id"] == i[0]._id:
+                    buf:Queue = i[0]
                     i[0] = Queue.from_map(collection_queues.find_one(change["documentKey"]["_id"]))
             except AttributeError:
                 print("Queue is creating now")
@@ -58,18 +57,26 @@ def create_queue(state, id, event, minutes=0):
             random_id=get_random_id(),
             message="@all, Очередь запущена. Можете фиксировать. "
                     "Чтобы добавить себя в очередь, "
-                    "напишите #фиксирую. Чтобы убрать очередь, напишите #выход. "
+                    "напишите #фиксирую. Чтобы убрать очередь, напишите #закрыть. "
                     "Чтобы получить все команды очереди, введите #помощь", keyboard=keyboard.get_keyboard())
     else:
+
         state[id][4] = True
         Thread(target=do_wait, args=(state, id, minutes,)).start()
+        last_number = str(minutes)[-1]
+        if last_number == "1":
+            word = "минуту"
+        elif last_number == "2" or last_number == "3" or last_number == "4":
+            word = "минуты"
+        else:
+            word = "минут"
         send_message(id,
-                     f"@all, Очередь запущена. Фиксировать можно через {minutes} минут. Чтобы добавить себя в очередь, "
-                     "напишите #фиксирую. Чтобы убрать очередь, напишите #выход. "
+                     f"@all, Очередь запущена. Фиксировать можно через {minutes} {word}. Чтобы добавить себя в очередь, "
+                     "напишите #фиксирую."
                      "Чтобы получить все команды очереди, введите #помощь")
 
 
-def do_wait(buf, id, event, minutes):
+def do_wait(buf, id, minutes):
     time.sleep(minutes * 60)
     buf[id][1] = True
     buf[id][4] = False
@@ -171,8 +178,8 @@ def all_queue(id):
         send_message(id, "Очередей нет.")
     else:
         result = "Очереди:\n"
-        for queue in queues:
-            result += queue["name"] + "\n"
+        for num, queue in enumerate(queues):
+            result += f"{num+1}) " + queue["name"] + "\n"
         send_message(id, result)
 
 
@@ -188,15 +195,21 @@ def goto(msg, id, condition, have_queue):
         if num == 0:
             num = 1
         queues = collection_queues.find({"vkConfs": {"$elemMatch": {"$eq": id}}})
-        if len(queues) < num or num < 1:
+        if num < 1:
             send_message(id, "Очереди по этому порядковому номеру не существует.")
         else:
-            condition[id][0] = Queue.from_map(queues[num - 1])
-            condition[id][1] = True
-            if not have_queue:
-                send_message(id, "Очередь была сменена")
-            else:
-                send_message(id, "Очередь была запущена.")
+            flag = False
+            try:
+                condition[id][0] = Queue.from_map(queues[num - 1])
+            except Exception:
+                send_message(id, "Очереди по этому порядковому номеру не существует.")
+                flag = True
+            if not flag:
+                condition[id][1] = True
+                if not have_queue:
+                    send_message(id, "Очередь была сменена")
+                else:
+                    send_message(id, "Очередь была запущена.")
 
 
 def pop_timer(buf, id):
@@ -204,21 +217,51 @@ def pop_timer(buf, id):
     buf[id][5] = False
 
 
-def pop(id, qu, pop_wait, no_message, buf):
+def out(id, qu, no_message, event):
+    user_id = vk.users.get(user_ids=event.obj['message']['from_id'])[0]["id"]
+    res = collection_queues.update_one({"_id": qu._id}, {"$pull": {"queuedPeople": {"login": user_id}}})
+    #buf = Queue.from_map(collection_queues.find_one({"_id": qu._id}))
+    if res.modified_count == 1:
+        if not no_message:
+            send_message(id, f"{full_name(event)} вышел(вышла) из очереди.")
+    else:
+        send_message(id, f"{full_name(event)} не в очереди")
+
+
+def pop(id, qu, pop_wait, no_message, condition, event):
     if not pop_wait:
         deleted = qu.pop()
         if deleted == "-":
-            send_message(id, "Очередь пуста")
-        else:
+            send_message(id, f"Некого удалять.")
+        #res = collection_queues.update_one({"_id": qu._id}, {"$pop": {"queuedPeople": -1}})
+        res = collection_queues.update_one({"_id": qu._id}, {"$pull": {"queuedPeople": {"login": deleted}}})
+        if res.modified_count == 1:
             res = ""
             if not no_message:
-                res += f"{deleted} был(а) удален(а) из очереди\n"
-            next = qu.get_first()
+                res += f"{qu.get_first()} был(а) удален(а) из очереди.\n"
+            next = qu.get_next()
             if next != "":
-                res += f"Следующий(-ая): [id{next.get_user_id()}|{next.get_name()}]"
-            send_message(id, res)
-            buf[id][5] = True
-            Thread(target=pop_timer, args=(buf, id,)).start()
+                res += f"Следующий(-ая) в очереди: {next}"
+            if res != "":
+                send_message(id, res)
+        condition[id][5] = True
+        Thread(target=pop_timer, args=(condition, id,)).start()
     else:
         send_message(id, "Защита двойного удаления, 5сек.")
+
+def freeze(id, qu, event, freeze=False):
+    user_id = vk.users.get(user_ids=event.obj['message']['from_id'])[0]["id"]
+    user = userManager.get_user(user_id)
+    if not freeze:
+        user["frozen"] = True
+    else:
+        user["frozen"] = False
+    res = collection_queues.update_one({"_id": qu._id, "queuedPeople": {"$elemMatch": {"login": user_id}}}, {"$set":{"queuedPeople.$":user}})
+    if res.modified_count == 1:
+        if not freeze:
+            send_message(id, f"{full_name(event)} был(а) заморожен(а)")
+        else:
+            send_message(id, f"{full_name(event)} был(а) разморожен(а)")
+    else:
+        send_message(id, "Человек не найден.")
 

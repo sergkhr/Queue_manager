@@ -170,9 +170,7 @@ def quit_qu(id, state):
     state[id].append("завершить")
 
 
-def pop_timer(buf, id):
-    time.sleep(5)
-    buf[id][5] = False
+
 
 
 def ifix(qu, id, queue, no_message, have_name, event):

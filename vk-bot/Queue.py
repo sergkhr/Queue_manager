@@ -1,5 +1,6 @@
 import json
 import time
+from UserManager import UserManager
 
 
 class Owner:
@@ -49,12 +50,11 @@ class Queue:
 
     def is_user_in_queue(self, user) -> bool:
         for i in self.queuedPeople:
-            if user.login == i.login:
+            if user["login"] == i["login"]:
                 return True
         return False
 
     def show(self) -> str:
-        print(self.queuedPeople)
         if len(self.queuedPeople) == 0:
             return "-"
         result = ""
@@ -62,8 +62,7 @@ class Queue:
             result += f"{i + 1}) "
             if self.queuedPeople[i]["frozen"]:
                 result += "❄"
-            print(who)
-            if who["type"] == "NOT_LOGGED":
+            if who["type"] == "NOT_LOGGED" or who["type"] == "SITE":
                 result += who["login"] + "\n"
             else:
                 result += who["username"] + "\n"
@@ -79,4 +78,23 @@ class Queue:
         else:
             return ""
 
+    def get_first(self) -> str:
+        if self.queuedPeople[0]["type"] == "VK":
+            return self.queuedPeople[0]["username"]
+        else:
+            return self.queuedPeople[0]["login"]
 
+    def get_next(self) -> str:
+        if len(self.queuedPeople) > 1:
+            if self.queuedPeople[1]["type"] == "VK":
+                return f"[id{self.queuedPeople[1]['login']}|{self.queuedPeople[1]['username']}]"
+            else:
+                return self.queuedPeople[1]["login"]
+        else:
+            return ""
+
+    def pop(self) -> str:
+        for human in self.queuedPeople:
+            if not human["frozen"]:
+                return human["login"]
+        return "-"
