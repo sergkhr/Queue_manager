@@ -16,7 +16,7 @@ export class Login {
     }
 
     public static async loginCheckMiddleware(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
-        console.log(req.headers)
+        // console.log(req.headers["authorization"])
         let token = req.headers["authorization"];
         if (token) {
             jwt.verify(token, Login.secretKey, (err, decoded) => {

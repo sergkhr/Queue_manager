@@ -3,6 +3,7 @@ import { Result } from "../Result.js";
 export class UserManager {
     constructor(db) {
         this.users = [];
+        this.subscribes = new Map();
         this.db = db;
         this.db.collection("Users").find({}).toArray().catch(err => {
             console.log("Something went wrong during \"Users\" find");
@@ -91,5 +92,50 @@ export class UserManager {
             }
         }
         return false;
+    }
+    async subscribe(login, req, res) {
+        console.log(login);
+        return await this.getUser(login).catch(err => {
+            console.log("Something went wrong");
+            return new Result(false);
+        }).then(item => {
+            var _a;
+            console.log(item);
+            if (item == null) {
+                return new Result(false, "User not found");
+            }
+            let subID = Date.now();
+            if (!this.subscribes.has(login)) {
+                this.subscribes.set(login, []);
+            }
+            (_a = this.subscribes.get(login)) === null || _a === void 0 ? void 0 : _a.push({
+                subID: subID,
+                res: res,
+                lastLogin: ""
+            });
+            req.on('close', () => {
+                var _a, _b, _c, _d;
+                console.log(`Connection for user ${login} closed`);
+                let subs = this.subscribes.get(login);
+                let i = (_a = subs === null || subs === void 0 ? void 0 : subs.length) !== null && _a !== void 0 ? _a : 0;
+                subs = (_b = subs === null || subs === void 0 ? void 0 : subs.filter(sub => { sub.subID !== subID; })) !== null && _b !== void 0 ? _b : [];
+                let ii = (_d = (_c = this.subscribes.get(login)) === null || _c === void 0 ? void 0 : _c.length) !== null && _d !== void 0 ? _d : 0;
+                console.log(`Deleted ${i - ii} subscribes`);
+            });
+            return new Result(true);
+        });
+    }
+    async notifyUser(login, queue, force = false) {
+        var _a;
+        console.log(`Searching for subs : ${login}`);
+        let subs = (_a = this.subscribes.get(login)) !== null && _a !== void 0 ? _a : [];
+        console.log(subs);
+        for (let sub of subs) {
+            if ((sub.lastLogin != login && sub.lastLogin != "") || force) {
+                sub.lastLogin;
+                console.log("Sending SSE to user");
+                sub.res.write(`data: ${JSON.stringify(queue)}\n\n`);
+            }
+        }
     }
 }

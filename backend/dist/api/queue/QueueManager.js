@@ -3,10 +3,11 @@ import { ObjectId } from "mongodb";
 import { Result } from "../Result.js";
 ;
 export class QueueManager {
-    constructor(db) {
+    constructor(db, userManager) {
         this.queues = [];
         this.subscribers = [];
         this.db = db;
+        this.userManager = userManager;
         this.db.collection("Queues").find({}).toArray().catch(err => {
             console.log("Something went wrong during \"Queues\" find");
             console.log(err);
@@ -15,7 +16,9 @@ export class QueueManager {
         });
         this.db.collection("Queues").watch().on('change', change => {
             console.log("Queues was changed");
+            // console.log(change);
             this.onQueuesChanged(change);
+            // this.userManager.notifyUser()
         });
     }
     async getQueues(filter = {}, full = false) {
@@ -172,6 +175,9 @@ export class QueueManager {
             return !item.frozen;
         });
         let state = people[i];
+        if (!state) {
+            return new Result(false, "There are no not frozen people in queue");
+        }
         // if (i >= 0) {
         //     people.splice(i, 1)
         // }
@@ -185,10 +191,16 @@ export class QueueManager {
         });
     }
     async onQueuesChanged(change) {
+        if (change.operationType == "update") {
+            // console.log(change.documentKey);
+            this.notifyUserInQueue(change.documentKey._id);
+        }
         for (let sub of this.subscribers) {
             if (change.documentKey._id.toString() == sub.queueId.toString()) {
                 console.log(`Sending event ${change.operationType}`);
                 if (change.operationType == "update") {
+                    // if (change.updateDescription.updatedFields.queuedPeople)
+                    // console.log(change.documentKey)
                     sub.res.write("data: " + JSON.stringify({
                         op: "update",
                         update: change.updateDescription.updatedFields
@@ -201,6 +213,25 @@ export class QueueManager {
                 }
             }
         }
+    }
+    async notifyUserInQueue(id) {
+        console.log("asd");
+        this.getQueue(id).then(item => {
+            console.log(item);
+            // console.log(`${id} - ${JSON.stringify(item?.queuedPeople)}`)
+            if (!item) {
+                return;
+            }
+            let user = item.queuedPeople.find(u => {
+                return !u.frozen;
+            });
+            console.log(user);
+            if (!user) {
+                return;
+            }
+            // console.log(`${user.login}`)
+            this.userManager.notifyUser(user.login, item);
+        });
     }
     async subscribe(queueId, req, res) {
         return await this.getQueue(queueId).catch(err => {
