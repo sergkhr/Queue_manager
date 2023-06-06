@@ -1,0 +1,7 @@
+backend/docs/
+backend/data/
+backend/node_modules/
+database/data/
+FrontEnd/test.html
+TODO
+.vscode/launch.json
