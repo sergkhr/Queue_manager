@@ -1,4 +1,4 @@
-let ip = "http://localhost:8000"
+let ip = "http://212.109.197.222:8000"
 
 
 

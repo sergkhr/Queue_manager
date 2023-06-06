@@ -15,8 +15,6 @@ services:
 
   db:
     container_name: qm_mongo
-    ports:
-      - 27017:27017
     build: database/
     volumes:
       - data:/data/db
@@ -30,6 +28,13 @@ services:
       - DB_HOST=db
       - DB_PORT=27017
       - DB_RS=qm_rs
+    
+  site:
+    build: FrontEnd/
+    depends_on:
+      - server
+    ports:
+      - 8080:8080
 
 volumes:
   data:

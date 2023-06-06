@@ -1,6 +1,8 @@
 FROM nginx:latest
 WORKDIR /site
 ADD . .
+RUN rm -dr views
+ADD ./views .
 ADD ./nginx.conf /etc/nginx/conf.d/site.conf
 EXPOSE 8080
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
