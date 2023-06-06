@@ -1,0 +1,8 @@
+.vscode
+backend/data
+backend/docs
+backend/node_modules
+database/data
+FrontEnd/test.html
+TODO
+vk-bot/private_api.py
