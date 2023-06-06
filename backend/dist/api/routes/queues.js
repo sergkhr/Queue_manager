@@ -13,6 +13,7 @@ export function post(req, res) {
     if (req.body.command == "create") {
         if (!req.body.logged) {
             res.json(new Result(false, "You must be logged to create queue"));
+            return;
         }
         let queue = req.body.arguments;
         queue.config = queue.config || {};
@@ -22,6 +23,7 @@ export function post(req, res) {
         };
         if (!queue.name) {
             res.json(new Result(false, "Name must be defined"));
+            return;
         }
         this.queueManager.createQueue(queue).then(result => {
             res.json(result);
