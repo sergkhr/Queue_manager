@@ -1,9 +1,11 @@
-main {
+.blocks {
   display: flex;
   justify-content: space-evenly;
   height: fit-content;
+  min-height: 200px;
+  height: calc(95% - 250px);
 }
-main > div {
+.blocks > div {
   background-color: var(--back-additional-color);
   padding: 0 20px;
   margin: 10px 0;
@@ -13,18 +15,56 @@ main > div {
   color: var(--main-color);
   box-shadow: 0px 0px 20px -5px #2a2a2a;
 }
-main > div > ul {
+.blocks > div > ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
-main > div > ul > li {
+.blocks > div > ul > li {
+  display: flex;
   margin: 10px 0;
 }
-main > div > ul > li > h2 {
-  display: inline;
-  margin-right: 10px;
+.blocks > div > ul > li > h2 {
+  align-self: center;
+  margin: 0 10px 0 0;
 }
-main > div > ul > li > h3 {
-  display: inline;
+.blocks > div > ul > li > h3 {
+  align-self: center;
+  margin: 0;
+}
+.blocks > div > ul > li > h4 {
+  align-self: center;
+  margin: 0 0 0 auto;
+}
+main > div {
+  margin-bottom: 30px;
+}
+main .controlButtons {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+main .navButtons {
+  display: flex;
+  justify-content: space-evenly;
+}
+main .queueNameBlock {
+  display: flex;
+  justify-content: flex-start;
+}
+main .queueNameBlock h1 {
+  text-align: center;
+  font-size: 3em;
+  color: var(--main-color);
+  text-shadow: 1px 1px 2px #2a2a2a;
+  margin: 0 80px;
+  padding: 0;
+}
+.hidden {
+  display: none;
+}
+@media screen and (max-width: 640px) {
+  .blocks {
+    height: calc(95% - 460px);
+  }
 }

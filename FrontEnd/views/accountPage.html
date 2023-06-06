@@ -5,7 +5,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="../styles/forAll.css">
-        <link rel="stylesheet" href="../styles/addQueueStyle.css">
+        <link rel="stylesheet" href="../styles/accountPageStyle.css">
     </head>
     <body>
 
@@ -22,31 +22,32 @@
 
 
         <main>
-            <form class="queueAddingForm">
-                <div class="inputBlock">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" required>
+            <div id="accountInfo">
+                <div class="infoBlock">
+                    <h1>Логин</h1>
+                    <h1 id="userLogin"></h1>
                 </div>
-                
-                <div class="inputBlock">
-                    <label for="description">Description:</label>
-                    <input type="text" id="description">
+                <div class="infoBlock">
+                    <h1>Отображаемое имя</h1>
+                    <h1 id="username"></h1>
                 </div>
-            
-                <div class="formButtons">
-                    <a href="queueList.html"  class="myBtn">
-                        <div>Назад</div>
-                    </a>
-                    <input type="button" value="Создать очередь" onclick="createQueue()" class="myBtn">
-                </div>
-            </form>
+                    
+            </div>
+            <div class="buttonStorage">
+                <a href="queueList.html"  class="myBtn">
+                    <div>Очереди</div>
+                </a>
+                <button class="myBtn" id="signOut">Выйти</button>
+            </div>
         </main>
+
+
         <footer>
 
         </footer>
 
         <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
         <script src="../scripts/toBackScript.js"></script>
-        <script src="../scripts/addQueueScript.js"></script>
+        <script src="../scripts/accountPageScript.js"></script>
     </body>
 </html>

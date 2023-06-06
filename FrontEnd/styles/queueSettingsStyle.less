@@ -1,7 +1,9 @@
-main{
+.blocks{
     display: flex;
     justify-content: space-evenly; 
     height: fit-content;
+    min-height: 200px;
+    height: calc(95% - 250px);
     &>div{
         background-color: var(--back-additional-color);
         padding: 0 20px;
@@ -16,15 +18,57 @@ main{
             padding: 0;
             margin: 0;
             &>li{
+                display: flex;
                 margin: 10px 0;
                 &>h2{
-                    display: inline;
-                    margin-right: 10px;
+                    align-self: center;
+                    margin: 0 10px 0 0;
                 }
                 &>h3{
-                    display: inline;
+                    align-self: center;
+                    margin: 0;
+                }
+                &>h4{
+                    align-self: center;
+                    margin: 0 0 0 auto;
                 }
             }
         }
+    }
+}
+main{
+    &>div{
+        margin-bottom: 30px;
+    }
+    .controlButtons{
+        display: flex;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+    }
+    .navButtons{
+        display: flex;
+        justify-content: space-evenly;
+    }
+    .queueNameBlock{
+        display: flex;
+        justify-content: flex-start;
+        h1{
+            text-align: center;
+            font-size: 3em;
+            color: var(--main-color);
+            text-shadow: 1px 1px 2px rgb(42, 42, 42);
+            margin: 0 80px;
+            padding: 0;
+        }
+    }
+}
+
+.hidden{
+    display: none;
+}
+
+@media screen and (max-width: 640px){
+    .blocks{
+        height: calc(95% - 460px);
     }
 }

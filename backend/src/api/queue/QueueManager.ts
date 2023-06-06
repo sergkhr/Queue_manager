@@ -200,10 +200,9 @@ export class QueueManager {
             return new Result(false, "Queue not found");
         }
         let people = queue.queuedPeople;
-        let i = people.findIndex(item => {
+        let state = people.find(item => {
             return !item.frozen;
         })
-        let state = people[i];
         if (!state) {
             return new Result(false, "There are no not frozen people in queue");
         }

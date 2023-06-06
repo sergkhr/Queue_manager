@@ -14,12 +14,14 @@ function generateQueueListElement(queue){
         </div>");
 
     container.append(addingElement);
+    console.log(addingElement);
 }
 
-
+//list generation
 queueList = getQueueList(); // queueList is a promise
 queueList.then((data) => {
    data.forEach((queue) => {
        generateQueueListElement(queue);
+       //console.log(queue);
    });
 });

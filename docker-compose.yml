@@ -12,14 +12,29 @@ services:
       - DB_RS=qm_rs
     volumes:
       - ./backend/config.json:/server/config.json
+
   db:
     container_name: qm_mongo
-    ports:
-      - 27017:27017
     build: database/
     volumes:
       - data:/data/db
     entrypoint: ["mongod", "--config", "/etc/mongo/mongo.conf", "--replSet", "qm_rs", "--bind_ip", "localhost,qm_mongo"]
+
+  bot:
+    build: vk-bot/
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=27017
+      - DB_RS=qm_rs
+    
+  site:
+    build: FrontEnd/
+    depends_on:
+      - server
+    ports:
+      - 8080:8080
 
 volumes:
   data:

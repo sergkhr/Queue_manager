@@ -17,6 +17,8 @@ main {
   max-width: 1080px;
   margin-left: auto;
   margin-right: auto;
+  box-sizing: border-box;
+  padding-top: 20px;
 }
 header {
   height: 70px;
@@ -70,7 +72,7 @@ header #account img {
   text-decoration: none;
   height: 60px;
   width: fit-content;
-  margin: auto 10px;
+  margin: 10px;
   border: none;
   border-radius: 20px;
   background-color: var(--active-color);
@@ -84,6 +86,8 @@ header #account img {
   text-shadow: 2px 2px 0 #380036;
   cursor: pointer;
   padding: 20px;
+  white-space: nowrap;
+  line-height: 0;
 }
 .myBtn:hover {
   filter: brightness(1.05);
