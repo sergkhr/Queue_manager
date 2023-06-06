@@ -250,6 +250,7 @@ def pop(id, qu, pop_wait, no_message, condition, event):
                 send_message(id, res)
         condition[id][5] = True
         Thread(target=pop_timer, args=(condition, id,)).start()
+
     else:
         send_message(id, "Защита двойного удаления, 5сек.")
 
