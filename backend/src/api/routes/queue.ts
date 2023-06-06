@@ -99,3 +99,21 @@ export function subscribe(this: Application, req: Express.Request, res: Express.
         res.writeHead(200, headers);
     })
 }
+
+export function checkExist(this: Application, req: Express.Request, res: Express.Response) {
+    let queueId: ObjectId;
+    try {
+        queueId = new ObjectId(req.params.id);
+    } catch (err) {
+        return;
+    }
+    this.queueManager.getQueue(queueId).catch(err => {
+        res.json(new Result(false))
+    }).then(item => {
+        if (item) {
+            res.json(new Result(true));
+        } else {
+            res.json(new Result(false, "Queue does not exist"));
+        }
+    })
+}

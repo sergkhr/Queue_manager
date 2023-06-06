@@ -2,6 +2,7 @@ import { Queue, Config, IQueue, AccessType, UserState, PeopleType } from "./Queu
 import Db, { ObjectId } from "mongodb"
 import { Result } from "../Result.js";
 import Express from "express";
+import { UserManager } from "../user/UserManager.js";
 
 export interface Filter {
     owner?: number;
@@ -11,18 +12,20 @@ export interface Filter {
 }
 
 interface Subscribe {
-    id: number,
-    queueId: ObjectId,
-    res: Express.Response
+    id: number;
+    queueId: ObjectId;
+    res: Express.Response;
 };
 
 export class QueueManager {
     db: Db.Db;
     queues: Queue[] = [];
     subscribers: Subscribe[] =[];
+    userManager: UserManager;
 
-    constructor(db: Db.Db){
+    constructor(db: Db.Db, userManager: UserManager){
         this.db = db;
+        this.userManager = userManager;
         this.db.collection("Queues").find({}).toArray().catch(err => {
             console.log("Something went wrong during \"Queues\" find");
             console.log(err);
@@ -32,7 +35,9 @@ export class QueueManager {
 
         this.db.collection("Queues").watch().on('change', change => {
             console.log("Queues was changed");
+            // console.log(change);
             this.onQueuesChanged(change);
+            // this.userManager.notifyUser()
         })
     }
 
@@ -69,7 +74,9 @@ export class QueueManager {
             console.log(err);
             return new Result(false);
         }).then(item => {
-            return new Result(true);
+            let oid = (item as unknown as Db.InsertOneResult<Db.BSON.Document>)
+            console.log(oid.insertedId.toString());
+            return new Result(true, oid.insertedId.toString());
         });
     }
 
@@ -78,7 +85,7 @@ export class QueueManager {
         if (!queue) {
             return false;
         }
-        if (queue.config.owner == login || queue.config.accessType == AccessType.PUBLIC) {
+        if (queue.config.owner.login == login || queue.config.accessType == AccessType.PUBLIC) {
             return true;
         }
         return false;
@@ -171,12 +178,11 @@ export class QueueManager {
             if (queue.queuedPeople[i].login == login) {
                 if (!queue.queuedPeople[i].frozen) {
                     newUser.frozen = true;
-                    
                 }
                 newUser.type = queue.queuedPeople[i].type;
             }
         }
-            return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}}, 
+        return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}}, 
                         {$set: {"queuedPeople.$": newUser}}).catch(err => {
             // return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}},
             //             {$set: {"queuedPeople.$"}})
@@ -198,6 +204,9 @@ export class QueueManager {
             return !item.frozen;
         })
         let state = people[i];
+        if (!state) {
+            return new Result(false, "There are no not frozen people in queue");
+        }
         // if (i >= 0) {
         //     people.splice(i, 1)
         // }
@@ -212,10 +221,16 @@ export class QueueManager {
     }
 
     async onQueuesChanged(change: any) {
+        if (change.operationType == "update") {
+            // console.log(change.documentKey);
+            this.notifyUserInQueue(change.documentKey._id);
+        }
         for (let sub of this.subscribers) {
             if (change.documentKey._id.toString() == sub.queueId.toString()) {
                 console.log(`Sending event ${change.operationType}`);
                 if (change.operationType == "update") {
+                    // if (change.updateDescription.updatedFields.queuedPeople)
+                    // console.log(change.documentKey)
                     sub.res.write("data: " + JSON.stringify({
                         op: "update",
                         update: change.updateDescription.updatedFields
@@ -227,6 +242,26 @@ export class QueueManager {
                 }
             }
         }
+    }
+
+    async notifyUserInQueue(id: ObjectId) {
+        console.log("asd")
+        this.getQueue(id).then(item => {
+            console.log(item);
+            // console.log(`${id} - ${JSON.stringify(item?.queuedPeople)}`)
+            if (!item) {
+                return;
+            }
+            let user = item.queuedPeople.find(u => {
+                return !u.frozen;
+            })
+            console.log(user)
+            if (!user) {
+                return;
+            }
+            // console.log(`${user.login}`)
+            this.userManager.notifyUser(user.login, item);
+        })
     }
 
     async subscribe(queueId: ObjectId, req: Express.Request, res: Express.Response){

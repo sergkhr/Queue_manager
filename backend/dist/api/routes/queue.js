@@ -93,3 +93,22 @@ export function subscribe(req, res) {
         res.writeHead(200, headers);
     });
 }
+export function checkExist(req, res) {
+    let queueId;
+    try {
+        queueId = new ObjectId(req.params.id);
+    }
+    catch (err) {
+        return;
+    }
+    this.queueManager.getQueue(queueId).catch(err => {
+        res.json(new Result(false));
+    }).then(item => {
+        if (item) {
+            res.json(new Result(true));
+        }
+        else {
+            res.json(new Result(false));
+        }
+    });
+}

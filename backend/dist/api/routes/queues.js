@@ -1,4 +1,5 @@
 import { Result } from "../Result.js";
+import { PeopleType } from "../queue/Queue.js";
 import { ObjectId } from "mongodb";
 export function get(req, res) {
     console.log("Queues get");
@@ -10,9 +11,14 @@ export function get(req, res) {
 export function post(req, res) {
     console.log("Queues post " + req.body.command);
     if (req.body.command == "create") {
+        if (!req.body.logged) {
+            res.json(new Result(false, "You must be logged to create queue"));
+        }
         let queue = req.body.arguments;
-        queue.config = {
-            owner: req.body.login
+        queue.config = queue.config || {};
+        queue.config.owner = {
+            login: req.body.login,
+            type: PeopleType.SITE
         };
         if (!queue.name) {
             res.json(new Result(false, "Name must be defined"));
@@ -20,6 +26,9 @@ export function post(req, res) {
         this.queueManager.createQueue(queue).then(result => {
             res.json(result);
         });
+    }
+    else {
+        res.json(new Result(false));
     }
 }
 export function del(req, res) {

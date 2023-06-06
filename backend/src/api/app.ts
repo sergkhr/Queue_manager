@@ -45,8 +45,9 @@ export class Application {
 
         this.config = config;
         this.expressApp = Express();
-        this.queueManager = new QueueManager(this.db);
+        
         this.userManager = new UserManager(this.db);
+        this.queueManager = new QueueManager(this.db, this.userManager);
         let app = this.expressApp;
 
         app.use(bodyParser.json());
@@ -74,7 +75,7 @@ export class Application {
         }))
 
         app.get('/', Routes.statusGet);
-        app.get("/sse", Routes.sse);
+        app.get("/sse/send", Login.loginCheckMiddleware.bind(this), Routes.sseSend.bind(this));
         
         app.post('/admin', this.adminPanelHandler.bind(this));
 
@@ -82,13 +83,15 @@ export class Application {
         app.post('/users', Routes.Users.post.bind(this));
 
         app.get('/user/:login', Routes.User.get.bind(this));
+        app.get('/user/:login/subscribe', Routes.User.subscribe.bind(this));
 
         app.post('/login', Routes.Login.post.bind(this));
 
         app.get('/queues', Routes.Queues.get.bind(this));
         app.post('/queues', Login.loginCheckMiddleware.bind(this), Routes.Queues.post.bind(this));
-        app.delete('/queues', Login.loginCheckMiddleware.bind(this), Routes.Queues.del.bind(this))
+        app.delete('/queues', Login.loginCheckMiddleware.bind(this), Routes.Queues.del.bind(this));
 
+        app.get("/queue/:id/check", Routes.Queue.checkExist.bind(this));
         app.get('/queue/:id', Routes.Queue.get.bind(this));
         app.post('/queue/:id', Routes.Queue.post.bind(this));
         app.put('/queue/:id', Login.loginCheckMiddleware.bind(this), Routes.Queue.put.bind(this));

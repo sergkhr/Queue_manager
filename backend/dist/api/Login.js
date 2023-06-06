@@ -11,7 +11,7 @@ class Login {
         this.secretKey = secretKey;
     }
     static async loginCheckMiddleware(req, res, next) {
-        console.log(req.headers);
+        // console.log(req.headers["authorization"])
         let token = req.headers["authorization"];
         if (token) {
             jwt.verify(token, Login.secretKey, (err, decoded) => {
