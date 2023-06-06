@@ -15,18 +15,28 @@ export function get(this: Application, req: Express.Request, res: Express.Respon
 export function post(this: Application, req: Express.Request, res: Express.Response) {
     console.log("Queues post " + req.body.command);
     if (req.body.command == "create") {
-        if (!req.body.logged) {
-            res.json(new Result(false, "You must be logged to create queue"));
-        }
         let queue = req.body.arguments as IQueue;
         queue.config = queue.config || {};
         queue.config.owner = {
             login: req.body.login,
             type: PeopleType.SITE
         }
+        if (!req.body.logged) {
+            // res.json(new Result(false, "You must be logged to create queue"));
+            // return;
+            queue.config.owner.login = "unknown";
+            queue.config.owner.type = PeopleType.NOT_LOGGED;
+        }
+        // let queue = req.body.arguments as IQueue;
+        // queue.config = queue.config || {};
+        // queue.config.owner = {
+        //     login: req.body.login,
+        //     type: PeopleType.SITE
+        // }
         
         if (!queue.name) {
             res.json(new Result(false, "Name must be defined"));
+            return;
         }
         this.queueManager.createQueue(queue).then(result => {
             res.json(result);
