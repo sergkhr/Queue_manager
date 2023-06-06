@@ -147,10 +147,6 @@ function loginEnter(token){
             alert("Вы уже в очереди");
         }
     });
-    let userLogin = decodeJwt(token).login;
-    getUserByLogin(userLogin).then((user) => {
-        usernameByLogin[userLogin] = user.username; 
-    });
 }
 
 
@@ -200,7 +196,7 @@ $("#popFirstOne").click(() => {
 let eventSource = new EventSource(ip + "/queue/" + id + "/subscribe");
 eventSource.onmessage = function(event){
     let data = JSON.parse(event.data);
-    console.log(data);
+    //console.log(data);
 
     if(data.op == "update"){
         let update = data.update;
@@ -211,6 +207,12 @@ eventSource.onmessage = function(event){
             let updateKeySplit = updateKey.split(".");
             let updateKeyIndex = updateKeySplit[1];
             queuedPeople[updateKeyIndex] = updateValue;
+
+            //updating list of usernames
+            getUserByLogin(updateValue.login).then((user) => {
+                usernameByLogin[updateValue.login] = user.username; 
+                queuedPeopleGenerate(queuedPeople);
+            });
         }
         else{
             // update: queuedPeople : []
