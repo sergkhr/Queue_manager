@@ -108,7 +108,7 @@ class Queue:
                 if human["type"] == "VK":
                     return human["login"], human["username"]
                 return human["login"], human["login"]
-        return "-"
+        return "-", "-"
 
     def find_person(self, login):
         for human in self.queuedPeople:
