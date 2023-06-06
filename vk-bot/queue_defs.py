@@ -85,14 +85,6 @@ def fixation(id, queue, qu):
     return True
 
 
-def exit_any():
-    while True:
-        print("Enter exit to finish process")
-        intent = input()
-        if intent.lower() == "exit":
-            os._exit(0)
-
-
 def commit(state, id, buf, msg, queue):
     if state[id][0] == "подтверждение":
         if msg == "[club219286730|@queue_fixation] да":

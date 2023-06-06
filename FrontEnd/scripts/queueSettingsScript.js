@@ -4,8 +4,11 @@ let id = url.searchParams.get("id");
 
 function generateQueuedPeopleListElement(person, index){
     let name = person.login;
-    if(person.type == 'SITE'){
+    if (person.type == 'SITE'){
         name = usernameByLogin[person.login];
+    }
+    if (person.type == 'VK') {
+        name = person.username;
     }
 
     let list = $("#membersList");

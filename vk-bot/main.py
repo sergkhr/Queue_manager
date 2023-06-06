@@ -19,7 +19,6 @@ def main():
     condition = {}
     commands = "#имя #описание #фиксирую #поп #выхожу #очередь #фиксация #анфикс #пропустить #заморозка #разморозка"
     commands = commands.split()
-    Thread(target=exit_any, args=()).start()
     print("Bot started")
     conversations = vk.messages.getConversations()
     state = {}

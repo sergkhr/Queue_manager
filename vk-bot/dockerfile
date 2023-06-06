@@ -1,0 +1,5 @@
+FROM python:3.10.11-slim
+WORKDIR /bot
+ADD . /bot/
+RUN pip3 install -r /bot/requirements.txt
+CMD [ "python3", "/bot/main.py" ]
