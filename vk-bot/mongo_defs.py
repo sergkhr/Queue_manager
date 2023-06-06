@@ -11,7 +11,12 @@ from UserManager import UserManager
 from pymongo import MongoClient
 from global_defs import vk, vk_session, send_message, full_name, longpoll
 
-client = MongoClient(f"mongodb://" + "127.0.0.1" + ":" + "27017" + f"/?replicaSet=qm_rs&directConnection=true")
+#print(os.environ.get("DB_HOST"), os.environ.get("DB_PORT"))
+DB_HOST = os.environ.get("DB_HOST") or "127.0.0.1"
+DB_PORT = os.environ.get("DB_PORT") or "27017"
+QM_RS = os.environ.get("QM_RS") or "qm_rs"
+client = MongoClient(f"mongodb://{DB_HOST}:{DB_PORT}/?replicaSet={QM_RS}&directConnection=true")
+
 
 db = client['queue_manager_db']
 collection_users = db["Users"]
