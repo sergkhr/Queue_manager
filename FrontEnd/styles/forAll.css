@@ -12,7 +12,7 @@ body {
   --active-color: #f47a60;
 }
 main {
-  height: calc(100% - 70px);
+  height: calc(100% - 90px);
   width: 100%;
   max-width: 1080px;
   margin-left: auto;

@@ -45,10 +45,15 @@ function queuedPeopleGenerate(queuedPeople){ //used in updating the list (but no
 async function firstListGeneration(queuedPeople){ //used in generating the list for the first time
 
     const promises = queuedPeople.map((person) => {
-        return getUserByLogin(person.login)
-          .then((user) => {
-            usernameByLogin[person.login] = user.username;
-          });
+        if(person.type == 'SITE'){
+            return getUserByLogin(person.login)
+                .then((user) => {
+                    usernameByLogin[person.login] = user.username;
+                });
+        }
+        else{
+            return Promise.resolve();
+        }
       });
     
       await Promise.all(promises);

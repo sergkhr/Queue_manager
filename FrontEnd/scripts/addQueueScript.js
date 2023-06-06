@@ -3,6 +3,12 @@ function createQueue() {
     let name = document.getElementById('name').value;
     let description = document.getElementById('description').value;
 
+    if (name == "") {
+        alert("You must enter a name for the queue");
+        return;
+    } 
+    if(description == undefined) description = "";
+
     // Create the request body
     let requestBody = {
         command: "create",
