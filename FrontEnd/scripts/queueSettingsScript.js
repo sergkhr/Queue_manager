@@ -12,12 +12,21 @@ function generateQueuedPeopleListElement(person, index){
     }
 
     let list = $("#membersList");
-    let addingElement = $("<li>\
+    if(person.frozen){
+        let addingElement = $("<li>\
+                            <h2>" + (index+1) + "</h2>\
+                            <h3>" + name + "</h3>\
+                            <h4>заморожен</h4>\
+                        </li>");
+        list.append(addingElement);
+    }
+    else{
+        let addingElement = $("<li>\
                             <h2>" + (index+1) + "</h2>\
                             <h3>" + name + "</h3>\
                         </li>");
-    list.append(addingElement);
-
+        list.append(addingElement);
+    }
     //console.log(queuedPeople);
     // console.log(list);
     // console.log(addingElement);
@@ -58,6 +67,48 @@ getQueueById(id).then((queue) => {
     queuedPeople = queue.queuedPeople;
     firstListGeneration(queuedPeople);
 });
+
+
+// hiding buttons for non logged users
+function hideButtons(){
+    let token = localStorage.getItem("queueManagerToken");
+    if(token != null &&  isTokenExpired(decodeJwt(token).exp)){
+        localStorage.removeItem("queueManagerToken");
+        token = null;
+    }
+    if(token == null){
+        $("#leaveQueue").addClass("hidden");
+        $("#freezeSelf").addClass("hidden");
+    }
+}
+hideButtons();
+
+// checking if logged user is frozen
+function checkFrozen(){
+    let token = localStorage.getItem("queueManagerToken");
+    if(token != null &&  isTokenExpired(decodeJwt(token).exp)){
+        localStorage.removeItem("queueManagerToken");
+        token = null;
+    }
+    if(token != null){
+        freezeBtn = $("#freezeSelf");
+        let userLogin = decodeJwt(token).login;
+        getQueueById(id).then((queue) => {
+            queue.queuedPeople.forEach((person) => {
+                if(person.login == userLogin){
+                    if(person.frozen){
+                        freezeBtn.text("Разморозиться");
+                    }
+                    else{
+                        freezeBtn.text("Заморозиться");
+                    }
+                }
+            });
+        });
+    }
+}
+checkFrozen();
+
 
 
 //------------------//
@@ -106,7 +157,7 @@ function loginEnter(token){
 // leave queue handler
 $("#leaveQueue").click(() => {
     let token = localStorage.getItem("queueManagerToken");
-    if(isTokenExpired(decodeJwt(token).exp)){
+    if(token != null &&  isTokenExpired(decodeJwt(token).exp)){
         localStorage.removeItem("queueManagerToken");
         token = null;
     }
@@ -115,6 +166,21 @@ $("#leaveQueue").click(() => {
         return;
     }
     leaveQueue(id, token);
+});
+
+
+// freeze button handler
+$("#freezeSelf").click(() => {
+    let token = localStorage.getItem("queueManagerToken");
+    if(token != null &&  isTokenExpired(decodeJwt(token).exp)){
+        localStorage.removeItem("queueManagerToken");
+        token = null;
+    }
+    if(token == null){
+        alert("You must be logged in to freeze yourself");
+        return;
+    }
+    freezeUser(id, token);
 });
 
 
@@ -134,7 +200,7 @@ $("#popFirstOne").click(() => {
 let eventSource = new EventSource(ip + "/queue/" + id + "/subscribe");
 eventSource.onmessage = function(event){
     let data = JSON.parse(event.data);
-    //console.log(data);
+    console.log(data);
 
     if(data.op == "update"){
         let update = data.update;

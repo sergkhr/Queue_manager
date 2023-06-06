@@ -1,6 +1,7 @@
 let ip = "http://localhost:8000"
 
 
+
 //jwt decoder by gpt
 function decodeJwt(token) {
     const base64Url = token.split('.')[1];
@@ -136,6 +137,28 @@ function leaveQueue(id, token){
             contentType: "application/json",
             data: JSON.stringify({
                 command: "leave"
+            }),
+            headers: {
+                authorization: token
+            },
+            success: function(data){
+                resolve(data);
+            },
+            error: function(err){
+                reject(err);
+            }
+        });
+    });
+}
+
+function freezeUser(id, token){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: ip + "/queue/" + id,
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({
+                command: "freeze"
             }),
             headers: {
                 authorization: token
