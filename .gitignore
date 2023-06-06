@@ -1,3 +1,9 @@
-
+backend/data
+backend/node_modules
+backend/docs
+database/data/
 .idea
 *.pyc
+TODO
+FrontEnd/test.html
+.vscode/launch.json
