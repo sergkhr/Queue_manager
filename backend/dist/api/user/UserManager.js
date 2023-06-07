@@ -131,7 +131,7 @@ export class UserManager {
         let subs = (_a = this.subscribes.get(login)) !== null && _a !== void 0 ? _a : [];
         console.log(subs);
         for (let sub of subs) {
-            if ((sub.lastLogin != login && sub.lastLogin != "") || force) {
+            if (sub.lastLogin != login || force) {
                 sub.lastLogin;
                 console.log("Sending SSE to user");
                 sub.res.write(`data: ${JSON.stringify(queue)}\n\n`);

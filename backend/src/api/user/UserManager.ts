@@ -155,12 +155,11 @@ export class UserManager {
         let subs = this.subscribes.get(login) ?? [];
         console.log(subs);
         for (let sub of subs) {
-            if ((sub.lastLogin != login && sub.lastLogin != "") || force) {
+            if (sub.lastLogin != login || force) {
                 sub.lastLogin
                 console.log("Sending SSE to user");
                 sub.res.write(`data: ${JSON.stringify(queue)}\n\n`);
             }
-            
         }
     }
 }

@@ -108,7 +108,7 @@ export function checkExist(req, res) {
             res.json(new Result(true));
         }
         else {
-            res.json(new Result(false));
+            res.json(new Result(false, "Queue does not exist"));
         }
     });
 }

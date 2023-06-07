@@ -8,7 +8,7 @@ let config = JSON.parse(fs.readFileSync("config.json", "utf8")) as AppConfig;
 console.log("Reading enviroment variables...");
 config.db.host = process.env.DB_HOST || config.db.host;
 config.db.port = Number(process.env.DB_PORT) || config.db.port;
-config.db.rs = process.env.DB_RS || "rs0";
+config.db.rs = process.env.DB_RS || "qm_rs" || "rs0";
 
 console.log("Final config:")
 console.log(JSON.stringify(config));

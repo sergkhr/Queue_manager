@@ -16,6 +16,8 @@ services:
   db:
     container_name: qm_mongo
     build: database/
+    ports:
+      - 27017:27017
     volumes:
       - data:/data/db
     entrypoint: ["mongod", "--config", "/etc/mongo/mongo.conf", "--replSet", "qm_rs", "--bind_ip", "localhost,qm_mongo"]

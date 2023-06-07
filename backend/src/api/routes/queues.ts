@@ -36,10 +36,16 @@ export function post(this: Application, req: Express.Request, res: Express.Respo
         
         if (!queue.name) {
             res.json(new Result(false, "Name must be defined"));
+            console.log("1")
             return;
         }
         this.queueManager.createQueue(queue).then(result => {
             res.json(result);
+            console.log("2")
+            console.log(JSON.stringify(result))
+        }).catch(e => {
+            res.json(new Result(true));
+            console.log("3")
         });
     } else {
         res.json(new Result(false));

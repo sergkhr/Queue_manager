@@ -9,8 +9,6 @@ import { Login } from "./Login.js";
 export class Application {
     constructor(db, config) {
         this.dbName = "queue_manager_db";
-        this.a = null;
-        this.counter = 0;
         this.dbClient = db;
         this.db = db.db(this.dbName);
         this.config = config;
@@ -39,7 +37,6 @@ export class Application {
             origin: "*"
         }));
         app.get('/', Routes.statusGet);
-        app.get("/sse", Routes.sse.bind(this));
         app.get("/sse/send", Login.loginCheckMiddleware.bind(this), Routes.sseSend.bind(this));
         app.post('/admin', this.adminPanelHandler.bind(this));
         app.get('/users', Routes.Users.get.bind(this));

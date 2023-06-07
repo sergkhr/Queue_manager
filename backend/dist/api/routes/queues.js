@@ -11,22 +11,36 @@ export function get(req, res) {
 export function post(req, res) {
     console.log("Queues post " + req.body.command);
     if (req.body.command == "create") {
-        if (!req.body.logged) {
-            res.json(new Result(false, "You must be logged to create queue"));
-            return;
-        }
         let queue = req.body.arguments;
         queue.config = queue.config || {};
         queue.config.owner = {
             login: req.body.login,
             type: PeopleType.SITE
         };
+        if (!req.body.logged) {
+            // res.json(new Result(false, "You must be logged to create queue"));
+            // return;
+            queue.config.owner.login = "unknown";
+            queue.config.owner.type = PeopleType.NOT_LOGGED;
+        }
+        // let queue = req.body.arguments as IQueue;
+        // queue.config = queue.config || {};
+        // queue.config.owner = {
+        //     login: req.body.login,
+        //     type: PeopleType.SITE
+        // }
         if (!queue.name) {
             res.json(new Result(false, "Name must be defined"));
+            console.log("1");
             return;
         }
         this.queueManager.createQueue(queue).then(result => {
             res.json(result);
+            console.log("2");
+            console.log(JSON.stringify(result));
+        }).catch(e => {
+            res.json(new Result(true));
+            console.log("3");
         });
     }
     else {
