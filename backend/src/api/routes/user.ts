@@ -31,6 +31,5 @@ export function subscribe(this: Application, req: Express.Request, res: Express.
             'Cache-Control': 'no-cache'
         };
         res.writeHead(200, headers);
-        // res.write("data: text\n\n");
     })
 }

@@ -75,11 +75,3 @@ export class Queue implements IQueue{
         this.vkConfs.push(id);
     }
 }
-
-// export interface IQueue {
-//     name: string;
-//     description?: string;
-//     config: Config;
-//     queuedPeople: UserState[];
-//     vkConfs?: number[];
-// }

@@ -1,7 +1,6 @@
 import Express from "express"
 import { Application } from "../app.js"
 import { PeopleType } from "../queue/Queue.js"
-import { UserState} from "../queue/Queue.js"
 export * as Queue from "./queue.js"
 export * as Users from "./users.js"
 export * as Queues from "./queues.js"

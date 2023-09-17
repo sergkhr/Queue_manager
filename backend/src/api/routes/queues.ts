@@ -22,17 +22,9 @@ export function post(this: Application, req: Express.Request, res: Express.Respo
             type: PeopleType.SITE
         }
         if (!req.body.logged) {
-            // res.json(new Result(false, "You must be logged to create queue"));
-            // return;
             queue.config.owner.login = "unknown";
             queue.config.owner.type = PeopleType.NOT_LOGGED;
         }
-        // let queue = req.body.arguments as IQueue;
-        // queue.config = queue.config || {};
-        // queue.config.owner = {
-        //     login: req.body.login,
-        //     type: PeopleType.SITE
-        // }
         
         if (!queue.name) {
             res.json(new Result(false, "Name must be defined"));
@@ -65,19 +57,3 @@ export function del(this: Application, req: Express.Request, res: Express.Respon
         });
     }
 }
-
-// queuesPostHandler(req: Express.Request, res: Express.Response) {
-//     if (req.body.command = "create") {
-//         let queue = this.queueManager.createQueue(req.body.arguments);
-//         if (queue) {
-//             if (req.body.arguments.vkConf) {
-//                 queue.linkVkConf(req.body.arguments.vkConf);
-//             }
-//             res.json(new Result(true));
-//         } else {
-//             res.json(new Result(false));
-//         }
-//     } else {
-//         res.json(new Result(false, "No command entered"));
-//     }
-// }

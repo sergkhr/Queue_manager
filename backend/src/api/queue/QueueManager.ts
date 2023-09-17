@@ -35,9 +35,7 @@ export class QueueManager {
 
         this.db.collection("Queues").watch().on('change', change => {
             console.log("Queues was changed");
-            // console.log(change);
             this.onQueuesChanged(change);
-            // this.userManager.notifyUser()
         })
     }
 
@@ -184,8 +182,6 @@ export class QueueManager {
         }
         return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}}, 
                         {$set: {"queuedPeople.$": newUser}}).catch(err => {
-            // return await this.db.collection("Queues").updateOne({_id: new ObjectId(id), queuedPeople: {$elemMatch: {login: login}}},
-            //             {$set: {"queuedPeople.$"}})
             console.log("Something went wrong during \"Queues\" updateOne");
             console.log(err);
             return null;
@@ -206,12 +202,7 @@ export class QueueManager {
         if (!state) {
             return new Result(false, "There are no not frozen people in queue");
         }
-        // if (i >= 0) {
-        //     people.splice(i, 1)
-        // }
-        // return await this.db.collection("Queues").updateOne({_id: id}, {$pull: {queuedPeople: {login: login}}}).catch(err => {
         return await this.db.collection("Queues").updateOne({_id: id}, {$pull: {queuedPeople: {login: state.login}}}).catch(err => {
-        // return await this.db.collection("Queues").updateOne({_id: id}, {$set: {queuedPeople: people}}).catch(err => {
             console.log(err);
             return new Result(false, err);
         }).then(item => {
@@ -221,15 +212,12 @@ export class QueueManager {
 
     async onQueuesChanged(change: any) {
         if (change.operationType == "update") {
-            // console.log(change.documentKey);
             this.notifyUserInQueue(change.documentKey._id);
         }
         for (let sub of this.subscribers) {
             if (change.documentKey._id.toString() == sub.queueId.toString()) {
                 console.log(`Sending event ${change.operationType}`);
                 if (change.operationType == "update") {
-                    // if (change.updateDescription.updatedFields.queuedPeople)
-                    // console.log(change.documentKey)
                     sub.res.write("data: " + JSON.stringify({
                         op: "update",
                         update: change.updateDescription.updatedFields
@@ -247,7 +235,6 @@ export class QueueManager {
         console.log("asd")
         this.getQueue(id).then(item => {
             console.log(item);
-            // console.log(`${id} - ${JSON.stringify(item?.queuedPeople)}`)
             if (!item) {
                 return;
             }
@@ -258,7 +245,6 @@ export class QueueManager {
             if (!user) {
                 return;
             }
-            // console.log(`${user.login}`)
             this.userManager.notifyUser(user.login, item);
         })
     }

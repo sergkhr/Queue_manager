@@ -1,9 +1,7 @@
 import {IUser, User} from "./User.js"
-import fs from "fs"
 
 import {Result} from "../Result.js";
 import Db from "mongodb";
-import { Login } from "../Login.js";
 import Express from "express"
 import { IQueue } from "../queue/Queue.js";
 
@@ -57,7 +55,6 @@ export class UserManager {
         let existedUser = await this.getUser(user.login);
 
         if (existedUser != null) {
-            // console.log("asdasdasdasdasds");
             return new Result(false, `User with login ${user.login} already exist`);
         }
 
@@ -94,19 +91,6 @@ export class UserManager {
             return new Result(true);
         })
     }
-    
-    // checkPassword(login: string, password: string) {
-    //     for (let i in this.users) {
-    //         if (this.users[i].login == login) {
-    //             if (this.users[i].checkPassword(password)) {
-    //                 return new Result(true);
-    //             } else {
-    //                 return new Result(false, "Wrong password");
-    //             }
-    //         }
-    //     }
-    //     return new Result(false, "User with login '" + login + "' not found");
-    // }
 
     userIsExist(login: string) {
         for (let i in this.users) {

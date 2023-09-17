@@ -4,8 +4,7 @@ import { Result } from "../Result.js";
 
 export function get(this: Application, req: Express.Request, res: Express.Response) {
     console.log("Users get");
-    this.userManager.getUsers().then(users =>{
-        // console.log(users);
+    this.userManager.getUsers().then(users => {
         res.json(users);
     });
 }
