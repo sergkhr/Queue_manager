@@ -123,9 +123,9 @@ export class UserManager {
 
             req.on('close', () => {
                 console.log(`Connection for user ${login} closed`);
-                let subs = this.subscribes.get(login)
-                let i = subs?.length ?? 0
-                subs = subs?.filter(sub => {sub.subID !== subID}) ?? []
+                let subs = this.subscribes.get(login);
+                let i = subs?.length ?? 0;
+                subs = subs?.filter(sub => {sub.subID !== subID}) ?? [];
 
                 let ii = this.subscribes.get(login)?.length ?? 0;
                 console.log(`Deleted ${i - ii} subscribes`);
@@ -140,7 +140,7 @@ export class UserManager {
         console.log(subs);
         for (let sub of subs) {
             if (sub.lastLogin != login || force) {
-                sub.lastLogin
+                sub.lastLogin;
                 console.log("Sending SSE to user");
                 sub.res.write(`data: ${JSON.stringify(queue)}\n\n`);
             }

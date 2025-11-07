@@ -8,7 +8,7 @@ import * as Routes from "./routes/index.js"
 import { QueueManager } from "./queue/QueueManager.js";
 import { UserManager } from "./user/UserManager.js";
 import { Result } from "./Result.js";
-import { Login } from "./Login.js"
+import { Login } from "./Login.js";
 
 
 export interface ConnectionConfig {
